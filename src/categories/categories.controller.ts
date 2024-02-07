@@ -17,18 +17,18 @@ export class CategoriesController {
     return this.categoriesService.findAll();
   }
 
-  @Get(':idbrand')
-  async findOne(@Param('idbrand') idbrand: number) {
-    return this.categoriesService.findOne(idbrand);
+  @Get(':idcategory')
+  async findByID(@Param('idbrand') idbrand: number) {
+    return this.categoriesService.findByID(idbrand);
   }
 
-  @Patch(':idbrand')
-  async update(@Param('idbrand') idbrand: number, @Body() updateCategoryDto: UpdateCategoryDto) {
-    return this.categoriesService.update(idbrand, updateCategoryDto);
+  @Patch(':idcategory')
+  async update(@Param('idcategory') idcategory: number, @Body() updateCategoryDto: UpdateCategoryDto) {
+    return this.categoriesService.update(idcategory, updateCategoryDto);
   }
 
-  @Delete(':idbrand')
-  async remove(@Param('idbrand') idbrand: number) {
-    return this.categoriesService.remove(idbrand);
+  @Delete(':idcategory')
+  async remove(@Param('idcategory') idcategory: number) {
+    return this.categoriesService.remove(idcategory);
   }
 }

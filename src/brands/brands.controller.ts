@@ -18,8 +18,8 @@ export class BrandsController {
   }
 
   @Get(':idbrand')
-  async findOne(@Param('idbrand') idbrand: number) {
-    return this.brandsService.findOne(idbrand);
+  async findByID(@Param('idbrand') idbrand: number) {
+    return this.brandsService.findByID(idbrand);
   }
 
   @Patch(':idbrand')

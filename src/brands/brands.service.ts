@@ -20,7 +20,9 @@ export class BrandsService {
     try {
       return this.brandsRepository.save(createBrandDto);
     } catch (error) {
-      throw new ServiceUnavailableException(error + ' / Could not connect to the DB',);
+      throw new ServiceUnavailableException(
+        error + ' / Could not connect to the DB',
+      );
     }
   }
 
@@ -36,10 +38,10 @@ export class BrandsService {
     }
   }
 
-  async findOne(idbrand: number): Promise<Brand> {
+  async findByID(idbrand: number): Promise<Brand> {
     try {
-      let brand = await this.brandsRepository.findOne({
-        where: { idbrand: idbrand },
+      let brand = await this.brandsRepository.findOneBy({
+        idbrand,
       });
       if (!brand) {
         throw new ServiceUnavailableException('Error - No brand found');

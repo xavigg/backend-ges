@@ -33,9 +33,11 @@ export class CategoriesService {
     }
   }
 
-  async findOne(idcategory: number): Promise<Category> {
+  async findByID(idcategory: number): Promise<Category> {
     try {
-      let category = await this.categoriesRepository.findOne({ where: { idcategory: idcategory } });
+      let category = await this.categoriesRepository.findOneBy({
+        idcategory,
+      });
       if (!category) {
         throw new ServiceUnavailableException('Error - No category found');
       } 

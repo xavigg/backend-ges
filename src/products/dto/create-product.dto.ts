@@ -8,11 +8,11 @@ import {
 
 export class CreateProductDto {
 
-@IsNotEmpty()
+@IsNotEmpty({ message: 'The field name cannot be empty' })
 @IsString()   
 readonly name: string;
 
-@IsNotEmpty()
+@IsNotEmpty({ message: 'The field price cannot be empty' })
 @IsNumber()
 readonly price: number;
 

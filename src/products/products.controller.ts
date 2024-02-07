@@ -20,10 +20,9 @@ export class ProductsController {
   }
 
   @Get(':idproduct')
-  async findOne(@Param('idproduct') idproduct: number): Promise<Product> {
-    return this.productsService.findOne(idproduct);
+  async findById(@Param('idproduct') idproduct: number): Promise<Product> {
+    return this.productsService.findById(idproduct);
   }
-
 
   @Patch(':idproduct')
   async update(@Param('idproduct') idproduct: number, @Body() updateProductDto: UpdateProductDto) {
