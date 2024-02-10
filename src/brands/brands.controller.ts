@@ -6,6 +6,7 @@ import {
   Patch,
   Param,
   Delete,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { BrandsService } from './brands.service';
 import { CreateBrandDto } from './dto/create-brand.dto';
@@ -26,20 +27,20 @@ export class BrandsController {
   }
 
   @Get(':idbrand')
-  async findByID(@Param('idbrand') idbrand: number) {
+  async findByID(@Param('idbrand', ParseIntPipe) idbrand: number) {
     return this.brandsService.findByID(idbrand);
   }
 
   @Patch(':idbrand')
   async update(
-    @Param('idbrand') idbrand: number,
+    @Param('idbrand', ParseIntPipe) idbrand: number,
     @Body() updateBrandDto: UpdateBrandDto,
   ) {
     return this.brandsService.update(idbrand, updateBrandDto);
   }
 
   @Delete(':idbrand')
-  async remove(@Param('idbrand') idbrand: number) {
+  async remove(@Param('idbrand', ParseIntPipe) idbrand: number) {
     return this.brandsService.remove(idbrand);
   }
 }

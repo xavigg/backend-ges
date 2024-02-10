@@ -78,11 +78,11 @@ export class ProductsService {
     }
   }
 
-  private FindOptionsWithWhere(field: string, subfield: string, name: string | number) {
+  private FindOptionsWithWhere(field: string, subfield: string, IdOrName: string | number) {
 
     let options = {
       where: {
-        [field]: { [subfield]: name },
+        [field]: { [subfield]: IdOrName },
       },
       relations: ['category', 'brand'],
       select: {
@@ -97,6 +97,18 @@ export class ProductsService {
     return options
   }
 
+  async findByBrandId(brandID: number): Promise<Product[]> {
+    try {
+      const products = await this.productsRepository.find(this.FindOptionsWithWhere("brand", "idbrand", brandID));
+      if (!products.length) {
+        throw new ServiceUnavailableException('Error: No documents found');
+      }
+      return products;
+    } catch (error) {
+      return error;
+    }
+  }
+
   async findByBrandName(brandName: string): Promise<Product[]> {
     try {
       const products = await this.productsRepository.find(this.FindOptionsWithWhere("brand", "name", brandName.toUpperCase()));
@@ -109,9 +121,9 @@ export class ProductsService {
     }
   }
 
-  async findByBrandId(brandID: number): Promise<Product[]> {
+  async findByCategoryID(categoryID: number): Promise<Product[]> {
     try {
-      const products = await this.productsRepository.find(this.FindOptionsWithWhere("brand", "idbrand", brandID));
+      const products = await this.productsRepository.find(this.FindOptionsWithWhere("category", "idcategory", categoryID));
       if (!products.length) {
         throw new ServiceUnavailableException('Error: No documents found');
       }
