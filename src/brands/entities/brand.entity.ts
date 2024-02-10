@@ -1,20 +1,36 @@
-import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, DeleteDateColumn } from 'typeorm';
+import { Product } from 'src/products/entities/product.entity';
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  CreateDateColumn,
+  UpdateDateColumn,
+  DeleteDateColumn,
+  OneToMany,
+} from 'typeorm';
 
-@Entity({name: 'brands'})
+@Entity({ name: 'brands' })
 export class Brand {
-    @PrimaryGeneratedColumn()
-    idbrand: number;
+  // ID
+  @PrimaryGeneratedColumn()
+  idbrand: number;
 
-    @Column({ type: 'varchar',})
-    name: string;
+  @Column({ type: 'varchar' })
+  name: string;
 
-    @CreateDateColumn({ name: 'created_at' })
-    created_at: string;
+  // CREATE DATE - UPDATE DATE - DETELED DATE
+  @CreateDateColumn({ name: 'created_at' })
+  created_at: string;
 
-    @UpdateDateColumn({ name: 'updated_at' })
-    updated_at: string;
+  @UpdateDateColumn({ name: 'updated_at' })
+  updated_at: string;
 
-    @DeleteDateColumn({ name: 'deleted_at' })
-    deleted_at: string;
+  @DeleteDateColumn({ name: 'deleted_at' })
+  deleted_at: string;
 
+  // RELATIONS
+
+  // PRODUCT
+  @OneToMany(() => Product, (product) => product.brand)
+  product: Product[];
 }

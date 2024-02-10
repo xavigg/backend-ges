@@ -1,37 +1,29 @@
-import { 
-    IsNotEmpty, 
-    IsNumber, 
-    IsOptional, 
-    IsString 
-} from 'class-validator';
-
+import { IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
 
 export class CreateProductDto {
+  @IsNotEmpty({ message: 'The field name cannot be empty' })
+  @IsString()
+  readonly name: string;
 
-@IsNotEmpty({ message: 'The field name cannot be empty' })
-@IsString()   
-readonly name: string;
+  @IsNotEmpty({ message: 'The field price cannot be empty' })
+  @IsNumber()
+  readonly price: number;
 
-@IsNotEmpty({ message: 'The field price cannot be empty' })
-@IsNumber()
-readonly price: number;
+  @IsOptional()
+  @IsString()
+  readonly details: string;
 
-@IsOptional()
-@IsString()   
-readonly details: string;
+  @IsNumber()
+  @IsOptional()
+  readonly warranty: number;
 
-@IsNumber()
-@IsOptional()
-readonly warranty: number;
+  @IsOptional()
+  @IsString()
+  readonly img_url: string;
 
-@IsOptional()
-@IsString()   
-readonly img_url: string;
+  @IsNumber()
+  readonly idcategory: number;
 
-@IsNumber()
-readonly idcategory: number;
-
-@IsNumber()
-readonly idbrand: number;
-
+  @IsNumber()
+  readonly idbrand: number;
 }

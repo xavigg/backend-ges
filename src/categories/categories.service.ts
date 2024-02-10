@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable, ServiceUnavailableException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  ServiceUnavailableException,
+} from '@nestjs/common';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -7,7 +11,6 @@ import { Repository } from 'typeorm';
 
 @Injectable()
 export class CategoriesService {
-
   constructor(
     @InjectRepository(Category)
     private categoriesRepository: Repository<Category>,
@@ -17,7 +20,9 @@ export class CategoriesService {
     try {
       return this.categoriesRepository.save(createCategoryDto);
     } catch (error) {
-      throw new ServiceUnavailableException(error + ' / Could not connect to the DB',);
+      throw new ServiceUnavailableException(
+        error + ' / Could not connect to the DB',
+      );
     }
   }
 
@@ -29,7 +34,7 @@ export class CategoriesService {
       }
       return categories;
     } catch (error) {
-      throw new ServiceUnavailableException(error,);
+      throw new ServiceUnavailableException(error);
     }
   }
 
@@ -40,20 +45,25 @@ export class CategoriesService {
       });
       if (!category) {
         throw new ServiceUnavailableException('Error - No category found');
-      } 
+      }
       return category;
     } catch (error) {
       throw new BadRequestException(error);
     }
   }
 
-  async update(idcategory: number, updateCategoryDto: UpdateCategoryDto,): Promise<Category> {
+  async update(
+    idcategory: number,
+    updateCategoryDto: UpdateCategoryDto,
+  ): Promise<Category> {
     try {
-      let toUpdate = await this.categoriesRepository.findOne({ where: { idcategory: idcategory } }); 
-      let updated = Object.assign(toUpdate, updateCategoryDto); 
-      return this.categoriesRepository.save(updated); 
+      let toUpdate = await this.categoriesRepository.findOne({
+        where: { idcategory: idcategory },
+      });
+      let updated = Object.assign(toUpdate, updateCategoryDto);
+      return this.categoriesRepository.save(updated);
     } catch (error) {
-      throw new BadRequestException('Category ID was incorrectly formatted',);
+      throw new BadRequestException('Category ID was incorrectly formatted');
     }
   }
 
@@ -61,7 +71,7 @@ export class CategoriesService {
     try {
       return await this.categoriesRepository.delete({ idcategory: idcategory });
     } catch (error) {
-      throw new BadRequestException('Category ID was incorrectly formatted',);
+      throw new BadRequestException('Category ID was incorrectly formatted');
     }
   }
 }

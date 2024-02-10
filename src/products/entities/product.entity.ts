@@ -1,39 +1,56 @@
+import { Brand } from 'src/brands/entities/brand.entity';
 import { Category } from 'src/categories/entities/category.entity';
-import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, DeleteDateColumn, OneToMany, JoinColumn } from 'typeorm';
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  CreateDateColumn,
+  UpdateDateColumn,
+  DeleteDateColumn,
+  JoinColumn,
+  ManyToOne,
+} from 'typeorm';
 
-@Entity({name: 'products'})
+@Entity({ name: 'products' })
 export class Product {
-    @PrimaryGeneratedColumn()
-    idproduct: number;
+  // ID
+  @PrimaryGeneratedColumn()
+  idproduct: number;
 
-    @Column({ type: 'varchar',})
-    name: string;
+  @Column({ type: 'varchar' })
+  name: string;
 
-    @Column({ type: 'numeric',})
-    price: number;
+  @Column({ type: 'numeric' })
+  price: number;
 
-    @Column({ type: 'text',})
-    details: string;
+  @Column({ type: 'text' })s
+  details: string;
 
-    @Column({ type: 'numeric',})
-    warranty: number;
+  @Column({ type: 'numeric' })
+  warranty: number;
 
-    @Column({ type: 'varchar',})
-    img_url: string;
+  @Column({ type: 'varchar' })
+  img_url: string;
 
-    @Column({ type: 'int4',})
-    idbrand: number;
+  // CREATE DATE - UPDATE DATE - DETELED DATE
+  @CreateDateColumn({ name: 'created_at' })
+  created_at: string;
 
-    @OneToMany(() => Category, (Category) => Category.idcategory, { cascade: true })
-    @JoinColumn({ name: 'name' })
-    categoryName: Category;
+  @UpdateDateColumn({ name: 'updated_at' })
+  updated_at: string;
 
-    @CreateDateColumn({ name: 'created_at' })
-    created_at: string;
+  @DeleteDateColumn({ name: 'deleted_at' })
+  deleted_at: string;
 
-    @UpdateDateColumn({ name: 'updated_at' })
-    updated_at: string;
+  // RELATIONS
 
-    @DeleteDateColumn({ name: 'deleted_at' })
-    deleted_at: string;
+  // CATEGORY
+  @ManyToOne(() => Category, (category) => category.product)
+  @JoinColumn({ name: 'idcategory' })
+  category: Category;
+
+  // BRAND
+  @ManyToOne(() => Brand, (brand) => brand.product)
+  @JoinColumn({ name: 'idbrand' })
+  brand: Brand;
 }

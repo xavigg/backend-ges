@@ -1,4 +1,12 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+} from '@nestjs/common';
 import { BrandsService } from './brands.service';
 import { CreateBrandDto } from './dto/create-brand.dto';
 import { UpdateBrandDto } from './dto/update-brand.dto';
@@ -23,7 +31,10 @@ export class BrandsController {
   }
 
   @Patch(':idbrand')
-  async update(@Param('idbrand') idbrand: number, @Body() updateBrandDto: UpdateBrandDto) {
+  async update(
+    @Param('idbrand') idbrand: number,
+    @Body() updateBrandDto: UpdateBrandDto,
+  ) {
     return this.brandsService.update(idbrand, updateBrandDto);
   }
 
