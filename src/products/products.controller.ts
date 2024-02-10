@@ -33,14 +33,14 @@ export class ProductsController {
     return this.productsService.findById(idproduct);
   }
 
-  @Get('/brand/:brand')
-  async findByBrand(@Param('brand') brand: string) {
-    return this.productsService.findByBrand(brand);
+  @Get('/brand/:brandName')
+  async findByBrand(@Param('brandName') brandName: string) {
+    return this.productsService.findByBrand(brandName);
   }
 
-  @Get('/category/:category')
-  async findByCategory(@Param('category') category: string) {
-    return this.productsService.findByCategory(category);
+  @Get('/category/:categoryName')
+  async findByCategory(@Param('categoryName') categoryName: string) {
+    return this.productsService.findByCategory(categoryName);
   }
 
   @Patch(':idproduct')

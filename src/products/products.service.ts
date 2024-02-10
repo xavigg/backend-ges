@@ -58,9 +58,11 @@ export class ProductsService {
         relations: ['category', 'brand'],
         select: {
           category: {
+            idcategory: true,
             name: true,
           },
           brand: {
+            idbrand: true,
             name: true,
           },
         },
@@ -75,22 +77,27 @@ export class ProductsService {
     }
   }
 
-  async findByBrand(brand: string): Promise<Product[]> {
+  private FindOptionsByName(column: string, name: string) {
+    let options = {
+      where: {
+        [column]: { name: name.toUpperCase() },
+      },
+      relations: ['category', 'brand'],
+      select: {
+        category: {
+          name: true,
+        },
+        brand: {
+          name: true,
+        },
+      },
+    }
+    return options
+  }
+
+  async findByBrand(brandName: string): Promise<Product[]> {
     try {
-      const products = await this.productsRepository.find({
-        where: {
-          brand: { name: brand.toUpperCase() },
-        },
-        relations: ['category', 'brand'],
-        select: {
-          category: {
-            name: true,
-          },
-          brand: {
-            name: true,
-          },
-        },
-      });
+      const products = await this.productsRepository.find(this.FindOptionsByName("brand", brandName));
       if (!products.length) {
         throw new ServiceUnavailableException('Error: No documents found');
       }
@@ -100,22 +107,9 @@ export class ProductsService {
     }
   }
 
-  async findByCategory(category: string): Promise<Product[]> {
+  async findByCategory(categoryName: string): Promise<Product[]> {
     try {
-      const products = await this.productsRepository.find({
-        where: {
-          category: { name: category.toUpperCase() },
-        },
-        relations: ['category', 'brand'],
-        select: {
-          category: {
-            name: true,
-          },
-          brand: {
-            name: true,
-          },
-        },
-      });
+      const products = await this.productsRepository.find(this.FindOptionsByName("category", categoryName));
       if (!products.length) {
         throw new ServiceUnavailableException('Error: No documents found');
       }
