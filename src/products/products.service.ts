@@ -78,8 +78,11 @@ export class ProductsService {
     }
   }
 
-  private FindOptionsWithWhere(field: string, subfield: string, IdOrName: string | number) {
-
+  private FindOptionsWithWhere(
+    field: string,
+    subfield: string,
+    IdOrName: number | string,
+  ) {
     let options = {
       where: {
         [field]: { [subfield]: IdOrName },
@@ -93,13 +96,15 @@ export class ProductsService {
           name: true,
         },
       },
-    }
-    return options
+    };
+    return options;
   }
 
   async findByBrandId(brandID: number): Promise<Product[]> {
     try {
-      const products = await this.productsRepository.find(this.FindOptionsWithWhere("brand", "idbrand", brandID));
+      const products = await this.productsRepository.find(
+        this.FindOptionsWithWhere('brand', 'idbrand', brandID),
+      );
       if (!products.length) {
         throw new ServiceUnavailableException('Error: No documents found');
       }
@@ -111,7 +116,9 @@ export class ProductsService {
 
   async findByBrandName(brandName: string): Promise<Product[]> {
     try {
-      const products = await this.productsRepository.find(this.FindOptionsWithWhere("brand", "name", brandName.toUpperCase()));
+      const products = await this.productsRepository.find(
+        this.FindOptionsWithWhere('brand', 'name', brandName.toUpperCase()),
+      );
       if (!products.length) {
         throw new ServiceUnavailableException('Error: No documents found');
       }
@@ -123,7 +130,9 @@ export class ProductsService {
 
   async findByCategoryID(categoryID: number): Promise<Product[]> {
     try {
-      const products = await this.productsRepository.find(this.FindOptionsWithWhere("category", "idcategory", categoryID));
+      const products = await this.productsRepository.find(
+        this.FindOptionsWithWhere('category', 'idcategory', categoryID),
+      );
       if (!products.length) {
         throw new ServiceUnavailableException('Error: No documents found');
       }
@@ -135,7 +144,13 @@ export class ProductsService {
 
   async findByCategoryName(categoryName: string): Promise<Product[]> {
     try {
-      const products = await this.productsRepository.find(this.FindOptionsWithWhere("category", "name", categoryName.toUpperCase()));
+      const products = await this.productsRepository.find(
+        this.FindOptionsWithWhere(
+          'category',
+          'name',
+          categoryName.toUpperCase(),
+        ),
+      );
       if (!products.length) {
         throw new ServiceUnavailableException('Error: No documents found');
       }
