@@ -7,6 +7,7 @@ import {
   Patch,
   Param,
   Delete,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { Request } from 'express';
 import { ProductsService } from './products.service';
@@ -29,30 +30,35 @@ export class ProductsController {
   }
 
   @Get(':idproduct')
-  async findById(@Param('idproduct') idproduct: number): Promise<Product> {
+  async findById(@Param('idproduct', ParseIntPipe) idproduct: number): Promise<Product> {
     return this.productsService.findById(idproduct);
   }
 
   @Get('/brand/:brandName')
   async findByBrand(@Param('brandName') brandName: string) {
-    return this.productsService.findByBrand(brandName);
+    return this.productsService.findByBrandName(brandName);
+  }
+
+  @Get('/brand/id/:brandID')
+  async findByBrandId(@Param('brandID', ParseIntPipe) brandID: number) {
+    return this.productsService.findByBrandId(brandID);
   }
 
   @Get('/category/:categoryName')
   async findByCategory(@Param('categoryName') categoryName: string) {
-    return this.productsService.findByCategory(categoryName);
+    return this.productsService.findByCategoryName(categoryName);
   }
 
   @Patch(':idproduct')
   async update(
-    @Param('idproduct') idproduct: number,
+    @Param('idproduct', ParseIntPipe) idproduct: number,
     @Body() updateProductDto: UpdateProductDto,
   ) {
     return this.productsService.update(idproduct, updateProductDto);
   }
 
   @Delete(':idproduct')
-  async remove(@Param('idproduct') idproduct: number) {
+  async remove(@Param('idproduct', ParseIntPipe) idproduct: number) {
     return this.productsService.remove(idproduct);
   }
 }

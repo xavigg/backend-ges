@@ -8,6 +8,7 @@ import { UpdateProductDto } from './dto/update-product.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Product } from './entities/product.entity';
 import { Repository } from 'typeorm';
+import { isString } from 'class-validator';
 
 @Injectable()
 export class ProductsService {
@@ -77,10 +78,11 @@ export class ProductsService {
     }
   }
 
-  private FindOptionsByName(column: string, name: string) {
+  private FindOptionsWithWhere(field: string, subfield: string, name: string | number) {
+
     let options = {
       where: {
-        [column]: { name: name.toUpperCase() },
+        [field]: { [subfield]: name },
       },
       relations: ['category', 'brand'],
       select: {
@@ -95,9 +97,9 @@ export class ProductsService {
     return options
   }
 
-  async findByBrand(brandName: string): Promise<Product[]> {
+  async findByBrandName(brandName: string): Promise<Product[]> {
     try {
-      const products = await this.productsRepository.find(this.FindOptionsByName("brand", brandName));
+      const products = await this.productsRepository.find(this.FindOptionsWithWhere("brand", "name", brandName.toUpperCase()));
       if (!products.length) {
         throw new ServiceUnavailableException('Error: No documents found');
       }
@@ -107,9 +109,21 @@ export class ProductsService {
     }
   }
 
-  async findByCategory(categoryName: string): Promise<Product[]> {
+  async findByBrandId(brandID: number): Promise<Product[]> {
     try {
-      const products = await this.productsRepository.find(this.FindOptionsByName("category", categoryName));
+      const products = await this.productsRepository.find(this.FindOptionsWithWhere("brand", "idbrand", brandID));
+      if (!products.length) {
+        throw new ServiceUnavailableException('Error: No documents found');
+      }
+      return products;
+    } catch (error) {
+      return error;
+    }
+  }
+
+  async findByCategoryName(categoryName: string): Promise<Product[]> {
+    try {
+      const products = await this.productsRepository.find(this.FindOptionsWithWhere("category", "name", categoryName.toUpperCase()));
       if (!products.length) {
         throw new ServiceUnavailableException('Error: No documents found');
       }
