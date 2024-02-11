@@ -35,7 +35,7 @@ export class ProductsController {
   }
 
   @Get('/brand/:brandName')
-  async findByBrand(@Param('brandName') brandName: string) {
+  async findByBrandName(@Param('brandName') brandName: string) {
     return this.productsService.findByBrandName(brandName);
   }
 
@@ -44,13 +44,13 @@ export class ProductsController {
     return this.productsService.findByBrandId(brandID);
   }
 
-  @Get('/category/id/:categoryID')
-  async findByCategoryID(@Param('categoryID', ParseIntPipe) categoryID: number) {
-    return this.productsService.findByCategoryID(categoryID);
+  @Get('/category/id/:categoryId')
+  async findByCategoryId(@Param('categoryId', ParseIntPipe) categoryId: number) {
+    return this.productsService.findByCategoryId(categoryId);
   }
 
   @Get('/category/:categoryName')
-  async findByCategory(@Param('categoryName') categoryName: string) {
+  async findByCategoryName(@Param('categoryName') categoryName: string) {
     return this.productsService.findByCategoryName(categoryName);
   }
 

@@ -128,7 +128,7 @@ export class ProductsService {
     }
   }
 
-  async findByCategoryID(categoryID: number): Promise<Product[]> {
+  async findByCategoryId(categoryID: number): Promise<Product[]> {
     try {
       const products = await this.productsRepository.find(
         this.FindOptionsWithWhere('category', 'idcategory', categoryID),
