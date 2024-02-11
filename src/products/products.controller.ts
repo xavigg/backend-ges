@@ -34,26 +34,6 @@ export class ProductsController {
     return this.productsService.findById(idproduct);
   }
 
-  @Get('/brand/:brandName')
-  async findByBrandName(@Param('brandName') brandName: string) {
-    return this.productsService.findByBrandName(brandName);
-  }
-
-  @Get('/brand/id/:brandID')
-  async findByBrandId(@Param('brandID', ParseIntPipe) brandID: number) {
-    return this.productsService.findByBrandId(brandID);
-  }
-
-  @Get('/category/id/:categoryId')
-  async findByCategoryId(@Param('categoryId', ParseIntPipe) categoryId: number) {
-    return this.productsService.findByCategoryId(categoryId);
-  }
-
-  @Get('/category/:categoryName')
-  async findByCategoryName(@Param('categoryName') categoryName: string) {
-    return this.productsService.findByCategoryName(categoryName);
-  }
-
   @Patch(':idproduct')
   async update(
     @Param('idproduct', ParseIntPipe) idproduct: number,
@@ -66,4 +46,27 @@ export class ProductsController {
   async remove(@Param('idproduct', ParseIntPipe) idproduct: number) {
     return this.productsService.remove(idproduct);
   }
+
+  // BRANDS
+  @Get('/brand/id/:brandID')
+  async findByBrandId(@Param('brandID', ParseIntPipe) brandID: number) {
+    return this.productsService.findByBrandId(brandID);
+  }
+
+  @Get('/brand/:brandName')
+  async findByBrandName(@Param('brandName') brandName: string) {
+    return this.productsService.findByBrandName(brandName);
+  }
+    
+  // CATEGORIES
+  @Get('/category/id/:categoryId')
+  async findByCategoryId(@Param('categoryId', ParseIntPipe) categoryId: number) {
+    return this.productsService.findByCategoryId(categoryId);
+  }
+
+  @Get('/category/:categoryName')
+  async findByCategoryName(@Param('categoryName') categoryName: string) {
+    return this.productsService.findByCategoryName(categoryName);
+  }
+
 }
