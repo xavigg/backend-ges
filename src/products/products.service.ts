@@ -7,7 +7,7 @@ import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Product } from './entities/product.entity';
-import { Repository } from 'typeorm';
+import { Between, Repository } from 'typeorm';
 import { isString } from 'class-validator';
 
 @Injectable()
@@ -30,6 +30,32 @@ export class ProductsService {
   async findAll(): Promise<Product[]> {
     try {
       let products = await this.productsRepository.find({
+        relations: ['category', 'brand'],
+        select: {
+          category: {
+            name: true,
+          },
+          brand: {
+            name: true,
+          },
+        },
+      });
+
+      if (!products.length) {
+        throw new ServiceUnavailableException('Error - No documents found');
+      }
+      return products;
+    } catch (error) {
+      throw new ServiceUnavailableException(error);
+    }
+  }
+
+  async findWithRangePrice(minPrice: number, maxPrice: number): Promise<Product[]> {
+    try {
+      let products = await this.productsRepository.find({
+        where: {
+          price: Between(minPrice, maxPrice),
+        },
         relations: ['category', 'brand'],
         select: {
           category: {

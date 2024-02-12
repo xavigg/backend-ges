@@ -8,6 +8,7 @@ import {
   Param,
   Delete,
   ParseIntPipe,
+  Query,
 } from '@nestjs/common';
 import { Request } from 'express';
 import { ProductsService } from './products.service';
@@ -45,6 +46,12 @@ export class ProductsController {
   @Delete(':idproduct')
   async remove(@Param('idproduct', ParseIntPipe) idproduct: number) {
     return this.productsService.remove(idproduct);
+  }
+
+  @Get('find')
+  async findWithRangePrice(@Query('minP') minPrice: number, @Query('maxP') maxPrice: number, ) {
+    console.log(minPrice, maxPrice);
+    //return this.productsService.findWithRangePrice(minPrice, maxPrice);
   }
 
   // BRANDS
