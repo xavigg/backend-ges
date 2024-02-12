@@ -49,9 +49,9 @@ export class ProductsController {
   }
 
   @Get('find')
-  async findWithRangePrice(@Query('minP') minPrice: number, @Query('maxP') maxPrice: number, ) {
+  async findWithRangePrice(@Query('minPrice', ParseIntPipe) minPrice: number, @Query('maxPrice', ParseIntPipe) maxPrice: number, ) {
     console.log(minPrice, maxPrice);
-    //return this.productsService.findWithRangePrice(minPrice, maxPrice);
+    return this.productsService.findWithRangePrice(minPrice, maxPrice);
   }
 
   // BRANDS
