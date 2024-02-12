@@ -25,6 +25,12 @@ export class ProductsController {
     return this.productsService.create(createProductDto);
   }
 
+  @Get('search')
+  async findWithRangePrice(@Query('minPrice', ParseIntPipe) minPrice: number, @Query('maxPrice', ParseIntPipe) maxPrice: number, ) {
+    console.log(minPrice, maxPrice);
+    return this.productsService.findWithRangePrice(minPrice, maxPrice);
+  }
+
   @Get()
   async find(@Req() request: Request): Promise<Product[]> {
     return this.productsService.findAll();
@@ -46,12 +52,6 @@ export class ProductsController {
   @Delete(':idproduct')
   async remove(@Param('idproduct', ParseIntPipe) idproduct: number) {
     return this.productsService.remove(idproduct);
-  }
-
-  @Get('find')
-  async findWithRangePrice(@Query('minPrice', ParseIntPipe) minPrice: number, @Query('maxPrice', ParseIntPipe) maxPrice: number, ) {
-    console.log(minPrice, maxPrice);
-    return this.productsService.findWithRangePrice(minPrice, maxPrice);
   }
 
   // BRANDS
