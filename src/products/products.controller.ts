@@ -25,12 +25,22 @@ export class ProductsController {
     return this.productsService.create(createProductDto);
   }
 
-  @Get('search')
+  /*@Get('search')
   async findWithRangePrice(
     @Query('minPrice', ParseIntPipe) minPrice: number,
     @Query('maxPrice', ParseIntPipe) maxPrice: number,
   ) {
     return this.productsService.findWithRangePrice(minPrice, maxPrice);
+  }*/
+
+  @Get('search')
+  async findByOptions(
+    @Query('brand',) brand?: string,
+    @Query('category', ) category?: string,
+    @Query('minPrice', ParseIntPipe) minPrice?: number,
+    @Query('maxPrice', ParseIntPipe) maxPrice?: number,
+  ) {
+    return this.productsService.findByOptions(brand, category, minPrice, maxPrice);
   }
 
   @Get()

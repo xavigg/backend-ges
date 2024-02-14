@@ -9,6 +9,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Product } from './entities/product.entity';
 import { Between, Repository } from 'typeorm';
 import { ErrorManager } from 'src/config/error.manager';
+import { Brand } from 'src/brands/entities/brand.entity';
 
 @Injectable()
 export class ProductsService {
@@ -40,6 +41,8 @@ export class ProductsService {
     field: string,
     subfield: string,
     IdOrName: number | string,
+    minPrice?: number,
+    maxPrice?: number,
   ) {
     let options = {
       where: {
@@ -141,6 +144,37 @@ export class ProductsService {
       );
       this.CheckIsNotFoundAndFail(products);
       return products;
+    } catch (error) {
+      throw ErrorManager.createSignatureError(error.message);
+    }
+  }
+
+  async findByOptions(
+    brand: string,
+    category: string,
+    minPrice: number,
+    maxPrice: number,
+  ): Promise<Product[]> {
+    try {
+      let query = await this.productsRepository
+        .createQueryBuilder('product')
+        .leftJoinAndSelect('product.brand', 'brand')
+        .leftJoinAndSelect('product.category', 'category');
+      if (brand) {
+        query.where('brand.name = :brand', { brand });
+      }
+      if (category) {
+        query.andWhere('category.name = :category', { category });
+      }
+      if (minPrice) {
+        query.andWhere('product.price >= :minPrice', { minPrice });
+      }
+      if (maxPrice) {
+        query.andWhere('product.price <= :maxPrice', { maxPrice });
+      }
+      const products = await query.getMany();
+      this.CheckIsNotFoundAndFail(products);
+      return await products;
     } catch (error) {
       throw ErrorManager.createSignatureError(error.message);
     }
