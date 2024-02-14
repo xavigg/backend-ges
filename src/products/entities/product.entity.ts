@@ -1,18 +1,16 @@
 import { Brand } from 'src/brands/entities/brand.entity';
 import { Category } from 'src/categories/entities/category.entity';
+import { BaseEntity } from 'src/config/base.entity';
 import {
   Entity,
   Column,
   PrimaryGeneratedColumn,
-  CreateDateColumn,
-  UpdateDateColumn,
-  DeleteDateColumn,
   JoinColumn,
   ManyToOne,
 } from 'typeorm';
 
 @Entity({ name: 'products' })
-export class Product {
+export class Product extends BaseEntity {
   // ID
   @PrimaryGeneratedColumn()
   idproduct: number;
@@ -23,7 +21,7 @@ export class Product {
   @Column({ type: 'numeric' })
   price: number;
 
-  @Column({ type: 'text' })s
+  @Column({ type: 'text' })
   details: string;
 
   @Column({ type: 'numeric' })
@@ -32,15 +30,12 @@ export class Product {
   @Column({ type: 'varchar' })
   img_url: string;
 
-  // CREATE DATE - UPDATE DATE - DETELED DATE
-  @CreateDateColumn({ name: 'created_at' })
-  created_at: string;
+  @Column({ type: 'numeric' })
+  idcategory: number;
 
-  @UpdateDateColumn({ name: 'updated_at' })
-  updated_at: string;
+  @Column({ type: 'numeric' })
+  idbrand: number;
 
-  @DeleteDateColumn({ name: 'deleted_at' })
-  deleted_at: string;
 
   // RELATIONS
 

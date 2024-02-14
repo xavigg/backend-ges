@@ -8,7 +8,7 @@ import { UpdateProductDto } from './dto/update-product.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Product } from './entities/product.entity';
 import { Between, Repository } from 'typeorm';
-import { isString } from 'class-validator';
+import { ErrorManager } from 'src/config/error.manager';
 
 @Injectable()
 export class ProductsService {
@@ -27,80 +27,12 @@ export class ProductsService {
     }
   }
 
-  async findAll(): Promise<Product[]> {
-    try {
-      let products = await this.productsRepository.find({
-        relations: ['category', 'brand'],
-        select: {
-          category: {
-            name: true,
-          },
-          brand: {
-            name: true,
-          },
-        },
+  private CheckIsNotFoundAndFail(products: Product[]) {
+    if (!products.length) {
+      throw new ErrorManager({
+        type: 'NOT_FOUND',
+        message: 'Error - No documents found',
       });
-
-      if (!products.length) {
-        throw new ServiceUnavailableException('Error - No documents found');
-      }
-      return products;
-    } catch (error) {
-      throw new ServiceUnavailableException(error);
-    }
-  }
-
-  async findWithRangePrice(minPrice: number, maxPrice: number): Promise<Product[]> {
-    try {
-      let products = await this.productsRepository.find({
-        where: {
-          price: Between(minPrice, maxPrice),
-        },
-        relations: ['category', 'brand'],
-        select: {
-          category: {
-            name: true,
-          },
-          brand: {
-            name: true,
-          },
-        },
-      });
-
-      if (!products.length) {
-        throw new ServiceUnavailableException('Error - No documents found');
-      }
-      return products;
-    } catch (error) {
-      throw new ServiceUnavailableException(error);
-    }
-  }
-
-  async findById(idproduct: number): Promise<Product> {
-    try {
-      let product = await this.productsRepository.findOne({
-        where: {
-          idproduct: idproduct,
-        },
-        relations: ['category', 'brand'],
-        select: {
-          category: {
-            idcategory: true,
-            name: true,
-          },
-          brand: {
-            idbrand: true,
-            name: true,
-          },
-        },
-      });
-
-      if (!product) {
-        throw new ServiceUnavailableException('Error - No product found');
-      }
-      return product;
-    } catch (error) {
-      throw new BadRequestException(error);
     }
   }
 
@@ -126,17 +58,91 @@ export class ProductsService {
     return options;
   }
 
+  async findAll(): Promise<Product[]> {
+    try {
+      let products = await this.productsRepository.find({
+        relations: ['category', 'brand'],
+        select: {
+          category: {
+            name: true,
+          },
+          brand: {
+            name: true,
+          },
+        },
+      });
+      this.CheckIsNotFoundAndFail(products);
+      return products;
+    } catch (error) {
+      throw ErrorManager.createSignatureError(error.message);
+    }
+  }
+
+  async findWithRangePrice(
+    minPrice: number,
+    maxPrice: number,
+  ): Promise<Product[]> {
+    try {
+      let products = await this.productsRepository.find({
+        where: {
+          price: Between(minPrice, maxPrice),
+        },
+        relations: ['category', 'brand'],
+        select: {
+          category: {
+            name: true,
+          },
+          brand: {
+            name: true,
+          },
+        },
+      });
+      this.CheckIsNotFoundAndFail(products);
+      return products;
+    } catch (error) {
+      throw ErrorManager.createSignatureError(error.message);
+    }
+  }
+
+  async findById(idproduct: number): Promise<Product> {
+    try {
+      let product = await this.productsRepository.findOne({
+        where: {
+          idproduct: idproduct,
+        },
+        relations: ['category', 'brand'],
+        select: {
+          category: {
+            idcategory: true,
+            name: true,
+          },
+          brand: {
+            idbrand: true,
+            name: true,
+          },
+        },
+      });
+      if (!product) {
+        throw new ErrorManager({
+          type: 'NOT_FOUND',
+          message: 'Error - No documents found',
+        });
+      }
+      return product;
+    } catch (error) {
+      throw ErrorManager.createSignatureError(error.message);
+    }
+  }
+
   async findByBrandId(brandID: number): Promise<Product[]> {
     try {
       const products = await this.productsRepository.find(
         this.FindOptionsWithWhere('brand', 'idbrand', brandID),
       );
-      if (!products.length) {
-        throw new ServiceUnavailableException('Error: No documents found');
-      }
+      this.CheckIsNotFoundAndFail(products);
       return products;
     } catch (error) {
-      return error;
+      throw ErrorManager.createSignatureError(error.message);
     }
   }
 
@@ -145,12 +151,10 @@ export class ProductsService {
       const products = await this.productsRepository.find(
         this.FindOptionsWithWhere('brand', 'name', brandName.toUpperCase()),
       );
-      if (!products.length) {
-        throw new ServiceUnavailableException('Error: No documents found');
-      }
+      this.CheckIsNotFoundAndFail(products);
       return products;
     } catch (error) {
-      return error;
+      throw ErrorManager.createSignatureError(error.message);
     }
   }
 
@@ -159,12 +163,10 @@ export class ProductsService {
       const products = await this.productsRepository.find(
         this.FindOptionsWithWhere('category', 'idcategory', categoryID),
       );
-      if (!products.length) {
-        throw new ServiceUnavailableException('Error: No documents found');
-      }
+      this.CheckIsNotFoundAndFail(products);
       return products;
     } catch (error) {
-      return error;
+      throw ErrorManager.createSignatureError(error.message);
     }
   }
 
@@ -177,12 +179,10 @@ export class ProductsService {
           categoryName.toUpperCase(),
         ),
       );
-      if (!products.length) {
-        throw new ServiceUnavailableException('Error: No documents found');
-      }
+      this.CheckIsNotFoundAndFail(products);
       return products;
     } catch (error) {
-      return error;
+      throw ErrorManager.createSignatureError(error.message);
     }
   }
 

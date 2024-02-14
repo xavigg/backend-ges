@@ -26,8 +26,10 @@ export class ProductsController {
   }
 
   @Get('search')
-  async findWithRangePrice(@Query('minPrice', ParseIntPipe) minPrice: number, @Query('maxPrice', ParseIntPipe) maxPrice: number, ) {
-    console.log(minPrice, maxPrice);
+  async findWithRangePrice(
+    @Query('minPrice', ParseIntPipe) minPrice: number,
+    @Query('maxPrice', ParseIntPipe) maxPrice: number,
+  ) {
     return this.productsService.findWithRangePrice(minPrice, maxPrice);
   }
 
@@ -37,7 +39,9 @@ export class ProductsController {
   }
 
   @Get(':idproduct')
-  async findById(@Param('idproduct', ParseIntPipe) idproduct: number): Promise<Product> {
+  async findById(
+    @Param('idproduct', ParseIntPipe) idproduct: number,
+  ): Promise<Product> {
     return this.productsService.findById(idproduct);
   }
 
@@ -64,10 +68,12 @@ export class ProductsController {
   async findByBrandName(@Param('brandName') brandName: string) {
     return this.productsService.findByBrandName(brandName);
   }
-    
+
   // CATEGORIES
   @Get('/category/id/:categoryId')
-  async findByCategoryId(@Param('categoryId', ParseIntPipe) categoryId: number) {
+  async findByCategoryId(
+    @Param('categoryId', ParseIntPipe) categoryId: number,
+  ) {
     return this.productsService.findByCategoryId(categoryId);
   }
 
@@ -75,5 +81,4 @@ export class ProductsController {
   async findByCategoryName(@Param('categoryName') categoryName: string) {
     return this.productsService.findByCategoryName(categoryName);
   }
-
 }
