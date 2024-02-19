@@ -9,7 +9,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Product } from './entities/product.entity';
 import { Between, Repository } from 'typeorm';
 import { ErrorManager } from 'src/config/error.manager';
-import { Brand } from 'src/brands/entities/brand.entity';
 
 @Injectable()
 export class ProductsService {
