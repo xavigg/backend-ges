@@ -10,6 +10,7 @@ import { Product } from './entities/product.entity';
 import { Between, LessThanOrEqual, MoreThanOrEqual, Repository } from 'typeorm';
 import { ErrorManager } from 'src/config/error.manager';
 import { SearchDto } from './dto/search.dto';
+import { OrderBy } from './dto/search.dto';
 
 @Injectable()
 export class ProductsService {
@@ -38,7 +39,7 @@ export class ProductsService {
   }
 
   async findByOptions(query: SearchDto): Promise<Product[]> {
-    const { brand, category, minPrice, maxPrice } = query;
+    const { brand, category, minPrice, maxPrice, orderBy } = query;
     try {
 
       // Verificar si minPrice es mayor que maxPrice y lanzar un error si es así
@@ -49,12 +50,14 @@ export class ProductsService {
       let queryOptions: any = {
         relations: ['brand', 'category'],
         select: {
-          brand: { name: true },
-          category: { name: true },
+          brand: { name: true, idbrand: true },
+          category: { name: true, idcategory: true },
         },
         where: {},
+        order: {},
       };
 
+      // SEARCH CONDITIONS
       if (brand) {
         queryOptions.where.brand = { name: brand };
       }
@@ -68,6 +71,20 @@ export class ProductsService {
       } else if (maxPrice) {
         queryOptions.where.price = LessThanOrEqual(maxPrice);
       }
+
+      // ORDER CONDITIONS 
+      if (query.orderBy === OrderBy.PRICE_ASC) {
+        queryOptions.order.price = 'ASC';
+      } else if (query.orderBy === OrderBy.PRICE_DESC) {
+        queryOptions.order.price = 'DESC';
+      }
+
+      if (query.orderBy === OrderBy.NAME_ASC) {
+        queryOptions.order.name = 'ASC' ;
+      } else if (query.orderBy === OrderBy.NAME_DESC) {
+        queryOptions.order.name = 'DESC' ;
+      }
+
       console.log(queryOptions)
       let products = await this.productsRepository.find(queryOptions);
 
