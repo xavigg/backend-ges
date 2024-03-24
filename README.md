@@ -2,8 +2,8 @@
 
 Este es un proyecto de comercio electrónico desarrollado con NestJS y TypeScript.
 
-![NestJS Logo](https://nestjs.com/img/logo_text.svg)
-![TypeScript Logo](https://raw.githubusercontent.com/remojansen/logo.ts/master/ts.png)
+<img src="https://i.imgur.com/zhRbVJ7.png" alt="NestJS Logo" width="200"/>
+<img src="https://i.imgur.com/2ytXjMv.png" alt="TypeScript Logo" width="200"/>
 
 ## Descripción
 
