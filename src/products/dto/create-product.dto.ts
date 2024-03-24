@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
+import { IsNotEmpty, IsNumber, IsOptional, IsString, Min } from 'class-validator';
 
 export class CreateProductDto {
   @IsNotEmpty({ message: 'The field name cannot be empty' })
@@ -7,6 +7,7 @@ export class CreateProductDto {
 
   @IsNotEmpty({ message: 'The field price cannot be empty' })
   @IsNumber()
+  @Min(0)
   readonly price: number;
 
   @IsOptional()
@@ -15,6 +16,7 @@ export class CreateProductDto {
 
   @IsNumber()
   @IsOptional()
+  @Min(0)
   readonly warranty: number;
 
   @IsOptional()
