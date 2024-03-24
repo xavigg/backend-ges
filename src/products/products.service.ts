@@ -16,7 +16,7 @@ export class ProductsService {
   constructor(
     @InjectRepository(Product)
     private productsRepository: Repository<Product>,
-  ) {}
+  ) { }
 
   async create(createProductDto: CreateProductDto): Promise<Product> {
     try {
@@ -40,6 +40,12 @@ export class ProductsService {
   async findByOptions(query: SearchDto): Promise<Product[]> {
     const { brand, category, minPrice, maxPrice } = query;
     try {
+
+      // Verificar si minPrice es mayor que maxPrice y lanzar un error si es así
+      if (minPrice !== undefined && maxPrice !== undefined && minPrice > maxPrice) {
+        throw new Error('minPrice cannot be greater than maxPrice');
+      }
+
       let queryOptions: any = {
         relations: ['brand', 'category'],
         select: {
@@ -62,7 +68,7 @@ export class ProductsService {
       } else if (maxPrice) {
         queryOptions.where.price = LessThanOrEqual(maxPrice);
       }
-
+      console.log(queryOptions)
       let products = await this.productsRepository.find(queryOptions);
 
       this.CheckIsNotFoundAndFail(products);
