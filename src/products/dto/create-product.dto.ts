@@ -2,7 +2,7 @@ import { IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
 
 export class CreateProductDto {
   @IsNotEmpty({ message: 'The field name cannot be empty' })
-  @IsString()
+  @IsString({ message: 'The field price is not a string' })
   readonly name: string;
 
   @IsNotEmpty({ message: 'The field price cannot be empty' })
@@ -10,7 +10,7 @@ export class CreateProductDto {
   readonly price: number;
 
   @IsOptional()
-  @IsString()
+  @IsString({ message: 'The field price is not a string' })
   readonly details: string;
 
   @IsNumber()
@@ -18,7 +18,7 @@ export class CreateProductDto {
   readonly warranty: number;
 
   @IsOptional()
-  @IsString()
+  @IsString({ message: 'The field price is not a string' })
   readonly img_url: string;
 
   @IsNumber()

@@ -9,12 +9,15 @@ import {
   Delete,
   ParseIntPipe,
   Query,
+  DefaultValuePipe,
+  UsePipes,
+  ValidationPipe,
 } from '@nestjs/common';
 import { Request } from 'express';
 import { ProductsService } from './products.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
-import { Product } from './entities/product.entity';
+import { SearchDto } from './dto/search.dto';
 
 @Controller('products')
 export class ProductsController {
@@ -25,34 +28,10 @@ export class ProductsController {
     return this.productsService.create(createProductDto);
   }
 
-  /*@Get('search')
-  async findWithRangePrice(
-    @Query('minPrice', ParseIntPipe) minPrice: number,
-    @Query('maxPrice', ParseIntPipe) maxPrice: number,
-  ) {
-    return this.productsService.findWithRangePrice(minPrice, maxPrice);
-  }*/
-
   @Get('search')
-  async findByOptions(
-    @Query('brand',) brand?: string,
-    @Query('category', ) category?: string,
-    @Query('minPrice', ParseIntPipe) minPrice?: number,
-    @Query('maxPrice', ParseIntPipe) maxPrice?: number,
-  ) {
-    return this.productsService.findByOptions(brand, category, minPrice, maxPrice);
-  }
-
-  @Get()
-  async find(@Req() request: Request): Promise<Product[]> {
-    return this.productsService.findAll();
-  }
-
-  @Get(':idproduct')
-  async findById(
-    @Param('idproduct', ParseIntPipe) idproduct: number,
-  ): Promise<Product> {
-    return this.productsService.findById(idproduct);
+  @UsePipes(new ValidationPipe())
+  async findByOptions(@Query() query: SearchDto) {
+    return this.productsService.findByOptions(query);
   }
 
   @Patch(':idproduct')
@@ -68,27 +47,5 @@ export class ProductsController {
     return this.productsService.remove(idproduct);
   }
 
-  // BRANDS
-  @Get('/brand/id/:brandID')
-  async findByBrandId(@Param('brandID', ParseIntPipe) brandID: number) {
-    return this.productsService.findByBrandId(brandID);
-  }
 
-  @Get('/brand/:brandName')
-  async findByBrandName(@Param('brandName') brandName: string) {
-    return this.productsService.findByBrandName(brandName);
-  }
-
-  // CATEGORIES
-  @Get('/category/id/:categoryId')
-  async findByCategoryId(
-    @Param('categoryId', ParseIntPipe) categoryId: number,
-  ) {
-    return this.productsService.findByCategoryId(categoryId);
-  }
-
-  @Get('/category/:categoryName')
-  async findByCategoryName(@Param('categoryName') categoryName: string) {
-    return this.productsService.findByCategoryName(categoryName);
-  }
 }

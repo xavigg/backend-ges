@@ -7,8 +7,9 @@ import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Product } from './entities/product.entity';
-import { Between, Repository } from 'typeorm';
+import { Between, LessThanOrEqual, MoreThanOrEqual, Repository } from 'typeorm';
 import { ErrorManager } from 'src/config/error.manager';
+import { SearchDto } from './dto/search.dto';
 
 @Injectable()
 export class ProductsService {
@@ -36,184 +37,37 @@ export class ProductsService {
     }
   }
 
-  private FindOptionsWithWhere(
-    field: string,
-    subfield: string,
-    IdOrName: number | string,
-    minPrice?: number,
-    maxPrice?: number,
-  ) {
-    let options = {
-      where: {
-        [field]: { [subfield]: IdOrName },
-      },
-      relations: ['category', 'brand'],
-      select: {
-        category: {
-          name: true,
-        },
-        brand: {
-          name: true,
-        },
-      },
-    };
-    return options;
-  }
-
-  async findAll(): Promise<Product[]> {
+  async findByOptions(query: SearchDto): Promise<Product[]> {
+    const { brand, category, minPrice, maxPrice } = query;
     try {
-      let products = await this.productsRepository.find({
-        relations: ['category', 'brand'],
+      let queryOptions: any = {
+        relations: ['brand', 'category'],
         select: {
-          category: {
-            name: true,
-          },
-          brand: {
-            name: true,
-          },
+          brand: { name: true },
+          category: { name: true },
         },
-      });
-      this.CheckIsNotFoundAndFail(products);
-      return products;
-    } catch (error) {
-      throw ErrorManager.createSignatureError(error.message);
-    }
-  }
+        where: {},
+      };
 
-  async findWithRangePrice(
-    minPrice: number,
-    maxPrice: number,
-  ): Promise<Product[]> {
-    try {
-      let products = await this.productsRepository.find({
-        where: {
-          price: Between(minPrice, maxPrice),
-        },
-        relations: ['category', 'brand'],
-        select: {
-          category: {
-            name: true,
-          },
-          brand: {
-            name: true,
-          },
-        },
-      });
-      this.CheckIsNotFoundAndFail(products);
-      return products;
-    } catch (error) {
-      throw ErrorManager.createSignatureError(error.message);
-    }
-  }
-
-  async findById(idproduct: number): Promise<Product> {
-    try {
-      let product = await this.productsRepository.findOne({
-        where: {
-          idproduct: idproduct,
-        },
-        relations: ['category', 'brand'],
-        select: {
-          category: {
-            idcategory: true,
-            name: true,
-          },
-          brand: {
-            idbrand: true,
-            name: true,
-          },
-        },
-      });
-      if (!product) {
-        throw new ErrorManager({
-          type: 'NOT_FOUND',
-          message: 'Error - No documents found',
-        });
-      }
-      return product;
-    } catch (error) {
-      throw ErrorManager.createSignatureError(error.message);
-    }
-  }
-
-  async findByBrandId(brandID: number): Promise<Product[]> {
-    try {
-      const products = await this.productsRepository.find(
-        this.FindOptionsWithWhere('brand', 'idbrand', brandID),
-      );
-      this.CheckIsNotFoundAndFail(products);
-      return products;
-    } catch (error) {
-      throw ErrorManager.createSignatureError(error.message);
-    }
-  }
-
-  async findByOptions(
-    brand: string,
-    category: string,
-    minPrice: number,
-    maxPrice: number,
-  ): Promise<Product[]> {
-    try {
-      let query = await this.productsRepository
-        .createQueryBuilder('product')
-        .leftJoinAndSelect('product.brand', 'brand')
-        .leftJoinAndSelect('product.category', 'category');
       if (brand) {
-        query.where('brand.name = :brand', { brand });
+        queryOptions.where.brand = { name: brand };
       }
       if (category) {
-        query.andWhere('category.name = :category', { category });
+        queryOptions.where.category = { name: category };
       }
-      if (minPrice) {
-        query.andWhere('product.price >= :minPrice', { minPrice });
+      if (minPrice && maxPrice) {
+        queryOptions.where.price = Between(minPrice, maxPrice);
+      } else if (minPrice) {
+        queryOptions.where.price = MoreThanOrEqual(minPrice);
+      } else if (maxPrice) {
+        queryOptions.where.price = LessThanOrEqual(maxPrice);
       }
-      if (maxPrice) {
-        query.andWhere('product.price <= :maxPrice', { maxPrice });
-      }
-      const products = await query.getMany();
+
+      let products = await this.productsRepository.find(queryOptions);
+
       this.CheckIsNotFoundAndFail(products);
+
       return await products;
-    } catch (error) {
-      throw ErrorManager.createSignatureError(error.message);
-    }
-  }
-
-  async findByBrandName(brandName: string): Promise<Product[]> {
-    try {
-      const products = await this.productsRepository.find(
-        this.FindOptionsWithWhere('brand', 'name', brandName.toUpperCase()),
-      );
-      this.CheckIsNotFoundAndFail(products);
-      return products;
-    } catch (error) {
-      throw ErrorManager.createSignatureError(error.message);
-    }
-  }
-
-  async findByCategoryId(categoryID: number): Promise<Product[]> {
-    try {
-      const products = await this.productsRepository.find(
-        this.FindOptionsWithWhere('category', 'idcategory', categoryID),
-      );
-      this.CheckIsNotFoundAndFail(products);
-      return products;
-    } catch (error) {
-      throw ErrorManager.createSignatureError(error.message);
-    }
-  }
-
-  async findByCategoryName(categoryName: string): Promise<Product[]> {
-    try {
-      const products = await this.productsRepository.find(
-        this.FindOptionsWithWhere(
-          'category',
-          'name',
-          categoryName.toUpperCase(),
-        ),
-      );
-      this.CheckIsNotFoundAndFail(products);
-      return products;
     } catch (error) {
       throw ErrorManager.createSignatureError(error.message);
     }

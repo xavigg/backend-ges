@@ -9,6 +9,7 @@ import {
 
 @Entity({ name: 'categories' })
 export class Category extends BaseEntity {
+  
   // ID
   @PrimaryGeneratedColumn()
   idcategory: number;
@@ -16,7 +17,7 @@ export class Category extends BaseEntity {
   @Column({ type: 'varchar' })
   name: string;
 
-  // RELATIONS
+  /* RELATIONS */
 
   // PRODUCT
   @OneToMany(() => Product, (product) => product.category)
