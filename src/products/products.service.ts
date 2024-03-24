@@ -41,8 +41,7 @@ export class ProductsService {
   async findByOptions(query: SearchDto): Promise<Product[]> {
     const { brand, category, minPrice, maxPrice, orderBy } = query;
     try {
-
-      // Verificar si minPrice es mayor que maxPrice y lanzar un error si es así
+      // CHECK IF MINPRICE IS MAYOR WHO MAXPRICE AND THROW
       if (minPrice !== undefined && maxPrice !== undefined && minPrice > maxPrice) {
         throw new Error('minPrice cannot be greater than maxPrice');
       }
@@ -85,7 +84,6 @@ export class ProductsService {
         queryOptions.order.name = 'DESC' ;
       }
 
-      console.log(queryOptions)
       let products = await this.productsRepository.find(queryOptions);
 
       this.CheckIsNotFoundAndFail(products);
