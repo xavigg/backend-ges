@@ -14,6 +14,6 @@ export class MinMaxPriceValidator implements ValidatorConstraintInterface {
   }
 
   defaultMessage(args: ValidationArguments) {
-    return 'Min price cannot be greater than max price';
+    return 'Minimum Price cannot be greater than Maximum Price';
   }
 }

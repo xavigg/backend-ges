@@ -20,6 +20,6 @@ async function bootstrap() {
 
   await app.listen(APP_PORT);
 
-  Logger.log(`Server en linea [Puerto: ${APP_PORT}]`);
+  Logger.log(`🚀 Server en linea [Puerto: ${APP_PORT}]`);
 }
 bootstrap();

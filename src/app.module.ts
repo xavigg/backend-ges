@@ -15,6 +15,8 @@ import { CategoriesModule } from './categories/categories.module';
     BrandsModule,
     CategoriesModule,
   ],
+  providers: [],
+  controllers: [],
   
 })
 export class AppModule {}

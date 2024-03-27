@@ -84,7 +84,7 @@ export class ProductsService {
         queryOptions.order.name = 'DESC' ;
       }
 
-      let products = await this.productsRepository.find(queryOptions);
+      const products = await this.productsRepository.find(queryOptions);
 
       this.CheckIsNotFoundAndFail(products);
 
