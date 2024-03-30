@@ -1,13 +1,12 @@
 import {
-  BadRequestException,
   Injectable,
-  ServiceUnavailableException,
 } from '@nestjs/common';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Category } from './entities/category.entity';
 import { Repository } from 'typeorm';
+import { ErrorHandler } from 'src/utils/error.handler';
 
 @Injectable()
 export class CategoriesService {
@@ -20,9 +19,7 @@ export class CategoriesService {
     try {
       return this.categoriesRepository.save(createCategoryDto);
     } catch (error) {
-      throw new ServiceUnavailableException(
-        error + ' / Could not connect to the DB',
-      );
+      ErrorHandler.handleBadRequestError('Could not connect to the DB');
     }
   }
 
@@ -30,11 +27,11 @@ export class CategoriesService {
     try {
       let categories = await this.categoriesRepository.find();
       if (!categories.length) {
-        throw new ServiceUnavailableException('Error - No documents found');
+        ErrorHandler.handleNotFoundError('Error - No category found');
       }
       return categories;
     } catch (error) {
-      throw new ServiceUnavailableException(error);
+      ErrorHandler.handleServiceUnavailableError(error);
     }
   }
 
@@ -44,11 +41,11 @@ export class CategoriesService {
         idcategory,
       });
       if (!category) {
-        throw new ServiceUnavailableException('Error - No category found');
+        ErrorHandler.handleNotFoundError('Error - No category found');
       }
       return category;
     } catch (error) {
-      throw new BadRequestException(error);
+      ErrorHandler.handleBadRequestError(error)
     }
   }
 
@@ -63,7 +60,7 @@ export class CategoriesService {
       let updated = Object.assign(toUpdate, updateCategoryDto);
       return this.categoriesRepository.save(updated);
     } catch (error) {
-      throw new BadRequestException('Category ID was incorrectly formatted');
+      ErrorHandler.handleBadRequestError('Category ID was incorrectly formatted');
     }
   }
 
@@ -71,7 +68,7 @@ export class CategoriesService {
     try {
       return await this.categoriesRepository.delete({ idcategory: idcategory });
     } catch (error) {
-      throw new BadRequestException('Category ID was incorrectly formatted');
+      ErrorHandler.handleBadRequestError('Category ID was incorrectly formatted');
     }
   }
 }

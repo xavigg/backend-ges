@@ -8,6 +8,7 @@ import { UpdateBrandDto } from './dto/update-brand.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Brand } from './entities/brand.entity';
 import { Repository } from 'typeorm';
+import { ErrorHandler } from 'src/utils/error.handler';
 
 @Injectable()
 export class BrandsService {
@@ -20,9 +21,7 @@ export class BrandsService {
     try {
       return this.brandsRepository.save(createBrandDto);
     } catch (error) {
-      throw new ServiceUnavailableException(
-        error + ' / Could not connect to the DB',
-      );
+      ErrorHandler.handleBadRequestError('Could not connect to the DB');
     }
   }
 
@@ -30,11 +29,11 @@ export class BrandsService {
     try {
       let brands = await this.brandsRepository.find();
       if (!brands.length) {
-        throw new ServiceUnavailableException('Error - No documents found');
+        ErrorHandler.handleNotFoundError('Error - No category found');
       }
       return brands;
     } catch (error) {
-      throw new ServiceUnavailableException(error);
+      ErrorHandler.handleServiceUnavailableError(error);
     }
   }
 
@@ -44,11 +43,11 @@ export class BrandsService {
         idbrand,
       });
       if (!brand) {
-        throw new ServiceUnavailableException('Error - No brand found');
+        ErrorHandler.handleNotFoundError('Error - No category found');
       }
       return brand;
     } catch (error) {
-      throw new BadRequestException(error);
+      ErrorHandler.handleServiceUnavailableError(error);
     }
   }
 
@@ -63,7 +62,7 @@ export class BrandsService {
       let updated = Object.assign(toUpdate, updateBrandDto);
       return this.brandsRepository.save(updated);
     } catch (error) {
-      throw new BadRequestException('Brand ID was incorrectly formatted');
+      ErrorHandler.handleBadRequestError('Brand ID was incorrectly formatted');
     }
   }
 
@@ -71,7 +70,7 @@ export class BrandsService {
     try {
       return await this.brandsRepository.delete({ idbrand: idbrand });
     } catch (error) {
-      throw new BadRequestException('Brand ID was incorrectly formatted');
+      ErrorHandler.handleBadRequestError('Brand ID was incorrectly formatted');
     }
   }
 }

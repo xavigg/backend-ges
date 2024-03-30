@@ -1,14 +1,13 @@
 import {
-  BadRequestException,
+  HttpStatus,
   Injectable,
-  ServiceUnavailableException,
 } from '@nestjs/common';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Product } from './entities/product.entity';
 import { Between, LessThanOrEqual, MoreThanOrEqual, Repository } from 'typeorm';
-import { ErrorManager } from 'src/config/error.manager';
+import { ErrorHandler } from 'src/utils/error.handler';
 import { SearchDto } from './dto/search.dto';
 import { OrderBy } from './dto/search.dto';
 
@@ -23,18 +22,17 @@ export class ProductsService {
     try {
       return this.productsRepository.save(createProductDto);
     } catch (error) {
-      throw new ServiceUnavailableException(
-        error + ' / Could not connect to the DB',
-      );
+      ErrorHandler.handleBadRequestError('Could not connect to the DB');
     }
   }
 
   private CheckIsNotFoundAndFail(products: Product[]) {
     if (!products.length) {
-      throw new ErrorManager({
-        type: 'NOT_FOUND',
-        message: 'Error - No documents found',
-      });
+      throw new ErrorHandler({ 
+        type: 'Not Found',
+        message: 'No products found',
+        statusCode: HttpStatus.NOT_FOUND,
+      })
     }
   }
 
@@ -87,10 +85,10 @@ export class ProductsService {
       const products = await this.productsRepository.find(queryOptions);
 
       this.CheckIsNotFoundAndFail(products);
-
       return await products;
+
     } catch (error) {
-      throw ErrorManager.createSignatureError(error.message);
+      throw ErrorHandler.createSignatureError(error)
     }
   }
 
@@ -105,7 +103,7 @@ export class ProductsService {
       let updated = Object.assign(toUpdate, updateProductDto);
       return this.productsRepository.save(updated);
     } catch (error) {
-      throw new BadRequestException('Product ID was incorrectly formatted');
+      ErrorHandler.handleBadRequestError('Product ID was incorrectly formatted');
     }
   }
 
@@ -113,7 +111,7 @@ export class ProductsService {
     try {
       return await this.productsRepository.delete({ idproduct: idproduct });
     } catch (error) {
-      throw new BadRequestException('Product ID was incorrectly formatted');
+      ErrorHandler.handleBadRequestError('Product ID was incorrectly formatted');
     }
   }
 }

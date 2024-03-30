@@ -4,6 +4,8 @@ import { ConfigModule } from '@nestjs/config';
 import { DbModule } from './db.module';
 import { BrandsModule } from './brands/brands.module';
 import { CategoriesModule } from './categories/categories.module';
+import { FileUploadModule } from './file-upload/file-upload.module';
+
 
 @Module({
   imports: [
@@ -14,9 +16,7 @@ import { CategoriesModule } from './categories/categories.module';
     ProductsModule,
     BrandsModule,
     CategoriesModule,
+    FileUploadModule
   ],
-  providers: [],
-  controllers: [],
-  
 })
 export class AppModule {}
