@@ -7,15 +7,15 @@ interface ErrorOptions {
 }
 
 export class ErrorHandler extends Error {
-  statusCode: HttpStatus; // Definir la propiedad statusCode
+  statusCode: HttpStatus; 
 
   constructor({ type, message, statusCode }: ErrorOptions) {
     super(`${type} / ${message}`);
-    this.statusCode = statusCode || HttpStatus.INTERNAL_SERVER_ERROR; // Inicializar statusCode con INTERNAL_SERVER_ERROR si no se proporciona
+    this.statusCode = statusCode || HttpStatus.INTERNAL_SERVER_ERROR; 
   }
 
   public static createSignatureError({ type, message, statusCode }: ErrorOptions) {
-    throw new HttpException(message, statusCode || HttpStatus.INTERNAL_SERVER_ERROR); // Usar statusCode proporcionado o INTERNAL_SERVER_ERROR si no se proporciona
+    throw new HttpException(message, statusCode || HttpStatus.INTERNAL_SERVER_ERROR);
   }
 
   public static handleNotFoundError(message: string) {
