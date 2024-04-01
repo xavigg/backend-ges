@@ -8,8 +8,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Product } from './entities/product.entity';
 import { Between, LessThanOrEqual, MoreThanOrEqual, Repository } from 'typeorm';
 import { ErrorHandler } from 'src/utils/error.handler';
-import { SearchDto } from './dto/search.dto';
-import { OrderBy } from './dto/search.dto';
+import { ProductResponse, ProductQuery } from './interface/products.interface';
+import { FindManyOptions } from 'typeorm/find-options/FindManyOptions';
 
 @Injectable()
 export class ProductsService {
@@ -26,65 +26,52 @@ export class ProductsService {
     }
   }
 
-  private CheckIsNotFoundAndFail(products: Product[]) {
+  private checkIsNotFoundAndFail(products: Product[]) {
     if (!products.length) {
-      throw new ErrorHandler({ 
-        type: 'Not Found',
+      throw new ErrorHandler({
+        type: 'NOT_FOUND',
         message: 'No products found',
         statusCode: HttpStatus.NOT_FOUND,
       })
     }
   }
 
-  async findByOptions(query: SearchDto): Promise<Product[]> {
+  async findByOptions(query: ProductQuery): Promise<Product[]> {
     const { brand, category, minPrice, maxPrice, orderBy } = query;
+
+    const queryOptions: FindManyOptions<Product> = {
+      relations: ['brand', 'category'],
+      select: {
+        brand: { name: true, idbrand: true },
+        category: { name: true, idcategory: true },
+      },
+      where: {},
+      order: {},
+    };
+
     try {
-      // CHECK IF MINPRICE IS MAYOR WHO MAXPRICE AND THROW
-      if (minPrice !== undefined && maxPrice !== undefined && minPrice > maxPrice) {
-        throw new Error('minPrice cannot be greater than maxPrice');
-      }
-
-      let queryOptions: any = {
-        relations: ['brand', 'category'],
-        select: {
-          brand: { name: true, idbrand: true },
-          category: { name: true, idcategory: true },
-        },
-        where: {},
-        order: {},
-      };
-
       // SEARCH CONDITIONS
       if (brand) {
-        queryOptions.where.brand = { name: brand };
+        queryOptions.where = { ...queryOptions.where, brand: { name: brand } };
       }
       if (category) {
-        queryOptions.where.category = { name: category };
+        queryOptions.where = { ...queryOptions.where, category: { name: category } };
       }
-      if (minPrice && maxPrice) {
-        queryOptions.where.price = Between(minPrice, maxPrice);
-      } else if (minPrice) {
-        queryOptions.where.price = MoreThanOrEqual(minPrice);
-      } else if (maxPrice) {
-        queryOptions.where.price = LessThanOrEqual(maxPrice);
-      }
-
-      // ORDER CONDITIONS 
-      if (query.orderBy === OrderBy.PRICE_ASC) {
-        queryOptions.order.price = 'ASC';
-      } else if (query.orderBy === OrderBy.PRICE_DESC) {
-        queryOptions.order.price = 'DESC';
+      if (minPrice !== undefined && maxPrice !== undefined) {
+        queryOptions.where = { ...queryOptions.where, price: Between(minPrice, maxPrice) };
+      } else if (minPrice !== undefined) {
+        queryOptions.where = { ...queryOptions.where, price: MoreThanOrEqual(minPrice) };
+      } else if (maxPrice !== undefined) {
+        queryOptions.where = { ...queryOptions.where, price: LessThanOrEqual(maxPrice) };
       }
 
-      if (query.orderBy === OrderBy.NAME_ASC) {
-        queryOptions.order.name = 'ASC' ;
-      } else if (query.orderBy === OrderBy.NAME_DESC) {
-        queryOptions.order.name = 'DESC' ;
-      }
+      // ORDER CONDITIONS
+      const [field, order] = orderBy.split("_")
+      queryOptions.order[field] = order;
 
       const products = await this.productsRepository.find(queryOptions);
-
-      this.CheckIsNotFoundAndFail(products);
+      this.checkIsNotFoundAndFail(products);
+      
       return await products;
 
     } catch (error) {

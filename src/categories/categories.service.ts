@@ -27,7 +27,7 @@ export class CategoriesService {
     try {
       let categories = await this.categoriesRepository.find();
       if (!categories.length) {
-        ErrorHandler.handleNotFoundError('Error - No category found');
+        ErrorHandler.handleNotFoundError('No category found');
       }
       return categories;
     } catch (error) {
@@ -41,7 +41,7 @@ export class CategoriesService {
         idcategory,
       });
       if (!category) {
-        ErrorHandler.handleNotFoundError('Error - No category found');
+        ErrorHandler.handleNotFoundError('No category found');
       }
       return category;
     } catch (error) {

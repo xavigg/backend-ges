@@ -1,13 +1,6 @@
-import { IsOptional, IsNumber, IsString, Min, Validate, IsEnum } from 'class-validator';
+import { IsOptional, IsNumber, IsString, Min, Validate, IsEnum, IsArray, ValidateNested } from 'class-validator';
 import { MinMaxPriceValidator } from '../validators/minMaxPrice.validator';
-
-export enum OrderBy {
-    PRICE_ASC = 'price_asc',
-    PRICE_DESC = 'price_desc',
-    NAME_ASC = 'name_asc',
-    NAME_DESC = 'name_desc'
-  }
-
+import { SearchOrderBy } from 'src/shared/types/shared.types';
 export class SearchDto {
     @IsOptional()
     @IsString()
@@ -29,7 +22,8 @@ export class SearchDto {
     maxPrice?: number;
 
     @IsOptional()
-    @IsEnum(OrderBy)
-    orderBy?: OrderBy;
+    @IsEnum(SearchOrderBy)
+    orderBy: SearchOrderBy;
+    
 
 }
