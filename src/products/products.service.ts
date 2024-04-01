@@ -8,7 +8,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Product } from './entities/product.entity';
 import { Between, LessThanOrEqual, MoreThanOrEqual, Repository } from 'typeorm';
 import { ErrorHandler } from 'src/utils/error.handler';
-import { ProductResponse, ProductQuery } from './interface/products.interface';
+import { ProductQuery } from './interface/products.interface';
 import { FindManyOptions } from 'typeorm/find-options/FindManyOptions';
 
 @Injectable()
@@ -22,7 +22,7 @@ export class ProductsService {
     try {
       return this.productsRepository.save(createProductDto);
     } catch (error) {
-      ErrorHandler.handleBadRequestError('Could not connect to the DB');
+      ErrorHandler.handleServiceUnavailableError('Could not connect to the DB');
     }
   }
 
