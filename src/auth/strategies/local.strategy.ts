@@ -20,7 +20,7 @@ export class LocalStrategy extends PassportStrategy(Strategy, 'local') {
       email,
       password,
     } as LoginDto);
-    if (!user) ErrorHandler.handleUnauthorizedError('Not Allowed');
+    if (!user) ErrorHandler.handleUnauthorizedError('Invalid email or password');
     return user;
   }
 }
