@@ -18,7 +18,7 @@ export class AuthController {
   }
 
   @Public()
-  @UseGuards(LocalAuthGuard)
+  //@UseGuards(LocalAuthGuard)
   @Post('register')
   register(@Body() registerDTO: RegisterDto) {
     return this.authService.register(registerDTO);
