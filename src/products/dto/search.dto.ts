@@ -1,4 +1,4 @@
-import { IsOptional, IsNumber, IsString, Min, Validate, IsEnum, IsArray, ValidateNested } from 'class-validator';
+import { IsOptional, IsNumber, IsString, Min, Validate, IsEnum } from 'class-validator';
 import { MinMaxPriceValidator } from '../validators/minMaxPrice.validator';
 import { SearchOrderBy } from 'src/shared/types/shared.types';
 export class SearchDto {

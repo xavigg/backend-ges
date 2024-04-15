@@ -1,5 +1,9 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
-import { S3Client, PutObjectCommand, PutObjectCommandOutput } from '@aws-sdk/client-s3';
+import {
+  S3Client,
+  PutObjectCommand,
+  PutObjectCommandOutput,
+} from '@aws-sdk/client-s3';
 import { v4 as uuidv4 } from 'uuid';
 import { ConfigService } from '@nestjs/config';
 import { ErrorHandler } from 'src/utils/error.handler';
@@ -13,12 +17,17 @@ export class FileUploadService {
       region: this.configService.get<string>('AWS_REGION'),
       credentials: {
         accessKeyId: this.configService.get<string>('AWS_ACCESS_KEY_ID'),
-        secretAccessKey: this.configService.get<string>('AWS_SECRET_ACCESS_KEY'),
+        secretAccessKey: this.configService.get<string>(
+          'AWS_SECRET_ACCESS_KEY',
+        ),
       },
     });
   }
 
-  async uploadFile(folderName: string, file: Express.Multer.File): Promise<string> {
+  async uploadFile(
+    folderName: string,
+    file: Express.Multer.File,
+  ): Promise<string> {
     const bucketName = this.configService.get<string>('AWS_S3_BUCKET_NAME');
     const uploadParams = {
       Bucket: bucketName,
@@ -31,11 +40,10 @@ export class FileUploadService {
       return 'Archivo subido exitosamente.';
     } catch (error) {
       ErrorHandler.createSignatureError({
-        'type': 'AWS_ERROR',
-        'message': error.message,
-        'statusCode': HttpStatus.BAD_REQUEST
-      })
+        type: 'AWS_ERROR',
+        message: error.message,
+        statusCode: HttpStatus.BAD_REQUEST,
+      });
     }
   }
 }
-

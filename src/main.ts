@@ -5,6 +5,7 @@ import { Logger, ValidationPipe } from '@nestjs/common';
 const APP_PORT = process.env.APP_PORT || 4444;
 
 async function bootstrap() {
+  
   const app = await NestFactory.create(AppModule);
 
   app.useGlobalPipes(

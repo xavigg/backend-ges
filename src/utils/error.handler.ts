@@ -22,6 +22,10 @@ export class ErrorHandler extends Error {
     throw new HttpException(message, HttpStatus.NOT_FOUND);
   }
 
+  public static handleUnauthorizedError(message: string) {
+    throw new HttpException(message, HttpStatus.UNAUTHORIZED);
+  }
+
   public static handleBadRequestError(message: string) {
     throw new HttpException(message, HttpStatus.BAD_REQUEST);
   }
