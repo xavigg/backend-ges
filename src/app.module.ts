@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { ProductsModule } from './products/products.module';
 import { ConfigModule } from '@nestjs/config';
 import { DbModule } from './db.module';
@@ -7,6 +7,8 @@ import { CategoriesModule } from './categories/categories.module';
 import { FileUploadModule } from './file-upload/file-upload.module';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
+import * as cookieParser from 'cookie-parser';
+
 
 
 @Module({
@@ -23,4 +25,4 @@ import { AuthModule } from './auth/auth.module';
     AuthModule
   ],
 })
-export class AppModule {}
+export class AppModule  {}
