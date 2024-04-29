@@ -1,4 +1,4 @@
-import { HttpStatus, Injectable } from '@nestjs/common';
+import { HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import {
   Repository,
@@ -10,8 +10,13 @@ import {
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { Product } from './entities/product.entity';
-import { ErrorHandler } from 'src/utils/error.handler';
-import { ProductQuery } from './interface/products.interface';
+import { ErrorHandler } from 'src/shared/error.handler';
+import { ProductFilterOptions } from './interface/products.interface';
+import {
+  ExecutionResult,
+  checkDuplicateData,
+  findByIdOrName,
+} from 'src/shared';
 
 @Injectable()
 export class ProductsService {
@@ -20,67 +25,141 @@ export class ProductsService {
     private readonly productsRepository: Repository<Product>,
   ) {}
 
-  async create(createProductDto: CreateProductDto): Promise<Product> {
+  async create(createProductDto: CreateProductDto): Promise<ExecutionResult> {
     try {
-      return await this.productsRepository.save(createProductDto);
+      const name = createProductDto.name;
+      await checkDuplicateData(this.productsRepository, { name: name });
+      const newProduct = this.productsRepository.create(createProductDto);
+      const result = await this.productsRepository.save(newProduct);
+      return {
+        success: true,
+        message: 'Product created successfully',
+        data: result,
+      };
     } catch (error) {
-      ErrorHandler.handleServiceUnavailableError('Could not connect to the DB');
+      ErrorHandler.createSignatureError(error);
     }
   }
 
   async update(
-    idproduct: number,
+    productId: number,
     updateProductDto: UpdateProductDto,
-  ): Promise<Product> {
+  ): Promise<ExecutionResult> {
     try {
-      const product = await this.productsRepository.findOneOrFail({
-        where: { idproduct },
+      let toUpdate = await this.productsRepository.findOne({
+        where: { productId: productId },
       });
-      Object.assign(product, updateProductDto);
-      return await this.productsRepository.save(product);
+      let updated = Object.assign(toUpdate, updateProductDto);
+      this.productsRepository.save(updated);
+      return {
+        success: true,
+        message: 'Product updated successfully',
+        data: updated,
+      };
     } catch (error) {
       ErrorHandler.handleBadRequestError(
-        'Product ID was incorrectly formatted or does not exist',
+        'Product ID was incorrectly formatted',
       );
     }
   }
 
-  async remove(idproduct: number): Promise<void> {
+  async remove(productId: number): Promise<ExecutionResult> {
     try {
-      const result = await this.productsRepository.delete(idproduct);
+      const result = await this.productsRepository.delete({
+        productId: productId,
+      });
       if (result.affected === 0) {
         throw new ErrorHandler({
-          type: 'NOT_FOUND',
-          message: `Product with ID ${idproduct} not found`,
+          message: `Product with ID ${productId} not found`,
           statusCode: HttpStatus.NOT_FOUND,
         });
       }
+      return { success: true, message: 'Product deleted successfully' };
     } catch (error) {
-      ErrorHandler.handleBadRequestError(
-        'Product ID was incorrectly formatted or does not exist',
+      throw ErrorHandler.handleBadRequestError(
+        'Product ID was incorrectly formatted',
       );
     }
   }
-  
-  async findAll(): Promise<Product[]> {
+
+  async softDelete(productId: number): Promise<ExecutionResult> {
     try {
-      let products = await this.productsRepository.find({ relations: [ "category", "brand" ] });
-      if (!products.length) {
-        ErrorHandler.handleNotFoundError('Error - No products found');
+      const result = await this.productsRepository.softDelete(productId);
+      if (result.affected === 0) {
+        throw new ErrorHandler({
+          message: `Product with ID ${productId} not found`,
+          statusCode: HttpStatus.NOT_FOUND,
+        });
       }
-      return products;
+      return { success: true, message: 'Product deleted successfully' };
     } catch (error) {
-      ErrorHandler.handleServiceUnavailableError(error);
+      throw ErrorHandler.createSignatureError(error);
     }
   }
 
-  async findByOptions(query: ProductQuery): Promise<Product[]> {
-    const queryOptions = this.buildQueryOptions(query);
+  async restoreDeletedProduct(productId: number): Promise<ExecutionResult> {
+    try {
+      const result = await this.productsRepository.restore(productId);
+      if (result.affected === 0) {
+        throw new ErrorHandler({
+          message: `Product with ID ${productId} not found`,
+          statusCode: HttpStatus.NOT_FOUND,
+        });
+      }
+      return { success: true, message: 'Product restored successfully' };
+    } catch (error) {
+      throw ErrorHandler.createSignatureError(error);
+    }
+  }
+
+  async findAll(): Promise<Product[]> {
+    try {
+      let products = await this.productsRepository.find({
+        relations: ['category', 'brand'],
+      });
+      if (products.length === 0) {
+        Logger.log('No products found');
+        return [];
+      }
+      return products;
+    } catch (error) {
+      ErrorHandler.handleBadRequestError(error);
+    }
+  }
+
+  async findProductByID(productId: number): Promise<Product> {
+    try {
+      let product = await this.productsRepository.findOne({
+        where: { productId: productId },
+        ...this.ProductRelationsAndFields(),
+      });
+      if (!product) {
+        throw new ErrorHandler({
+          message: 'No product found with the given ID',
+          statusCode: HttpStatus.NOT_FOUND,
+        });
+      }
+      return product;
+    } catch (error) {
+      throw ErrorHandler.createSignatureError(error);
+    }
+  }
+
+  async findProductByIdOrName(idOrName: string): Promise<Product[]> {
+    try {
+      const products = await findByIdOrName(this.productsRepository, idOrName);
+      return products;
+    } catch (error) {
+      throw ErrorHandler.createSignatureError(error);
+    }
+  }
+
+  async findProductByFilterOptions(query: ProductFilterOptions): Promise<Product[]> {
+    const queryOptions = this.buildProductQueryFilterOptions(query);
     try {
       const products = await this.productsRepository.find(queryOptions);
       if (products.length === 0) {
         throw new ErrorHandler({
-          type: 'NOT_FOUND',
           message: 'No products found',
           statusCode: HttpStatus.NOT_FOUND,
         });
@@ -91,7 +170,9 @@ export class ProductsService {
     }
   }
 
-  private buildQueryOptions(query: ProductQuery): FindManyOptions<Product> {
+  private buildProductQueryFilterOptions(
+    query: ProductFilterOptions,
+  ): FindManyOptions<Product> {
     const { brand, category, minPrice, maxPrice, orderBy } = query;
     let whereConditions = {};
     let orderConditions = {};
@@ -109,12 +190,22 @@ export class ProductsService {
       const [field, order] = orderBy.split('_');
       orderConditions[field] = order.toUpperCase();
     }
-    console.log(whereConditions);
-    console.log(orderConditions);
-    return {
-      relations: ['brand', 'category'],
+    const finalQuery = {
+      ...this.ProductRelationsAndFields(),
       where: whereConditions,
       order: orderConditions,
     };
+    return finalQuery;
+  }
+
+  private ProductRelationsAndFields() {
+    const query = {
+      relations: ['category', 'brand'],
+      select: {
+        category: { categoryId: true, name: true },
+        brand: { brandId: true, name: true },
+      },
+    };
+    return query;
   }
 }

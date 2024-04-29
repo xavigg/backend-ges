@@ -1,4 +1,5 @@
 module.exports = {
+  extends: 'nestjs',
   parser: '@typescript-eslint/parser',
   parserOptions: {
     project: 'tsconfig.json',

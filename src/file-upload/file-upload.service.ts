@@ -6,7 +6,7 @@ import {
 } from '@aws-sdk/client-s3';
 import { v4 as uuidv4 } from 'uuid';
 import { ConfigService } from '@nestjs/config';
-import { ErrorHandler } from 'src/utils/error.handler';
+import { ErrorHandler } from 'src/shared/error.handler';
 
 @Injectable()
 export class FileUploadService {
@@ -37,10 +37,9 @@ export class FileUploadService {
     try {
       const command = new PutObjectCommand(uploadParams);
       const data: PutObjectCommandOutput = await this.s3.send(command);
-      return 'Archivo subido exitosamente.';
+      return 'File uploaded successfully';
     } catch (error) {
       ErrorHandler.createSignatureError({
-        type: 'AWS_ERROR',
         message: error.message,
         statusCode: HttpStatus.BAD_REQUEST,
       });

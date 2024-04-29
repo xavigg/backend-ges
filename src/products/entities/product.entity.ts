@@ -13,7 +13,7 @@ import {
 export class Product extends BaseEntity {
   // ID
   @PrimaryGeneratedColumn()
-  idproduct: number;
+  productId: number;
 
   @Column({ type: 'varchar' })
   name: string;
@@ -31,21 +31,21 @@ export class Product extends BaseEntity {
   img_url: string;
 
   @Column({ type: 'numeric' })
-  idcategory: number;
+  categoryId: number;
 
   @Column({ type: 'numeric' })
-  idbrand: number;
+  brandId: number;
 
 
   // RELATIONS
 
   // CATEGORY
   @ManyToOne(() => Category, (category) => category.product)
-  @JoinColumn({ name: 'idcategory' })
+  @JoinColumn({ name: 'categoryId' })
   category: Category;
 
   // BRAND
   @ManyToOne(() => Brand, (brand) => brand.product)
-  @JoinColumn({ name: 'idbrand' })
+  @JoinColumn({ name: 'brandId' })
   brand: Brand;
 }

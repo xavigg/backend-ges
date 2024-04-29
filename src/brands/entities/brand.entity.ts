@@ -11,7 +11,7 @@ import {
 export class Brand extends BaseEntity {
   // ID
   @PrimaryGeneratedColumn()
-  idbrand: number;
+  brandId: number;
 
   @Column({ type: 'varchar' })
   name: string;

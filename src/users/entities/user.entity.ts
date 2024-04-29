@@ -1,12 +1,13 @@
 import { BaseEntity } from 'src/config/base.entity';
 import * as bcrypt from 'bcrypt';
-import { BeforeInsert, BeforeUpdate, Column, Entity } from 'typeorm';
-import { ErrorHandler } from 'src/utils/error.handler';
+import { BeforeInsert, Column, Entity } from 'typeorm';
+import { ErrorHandler } from 'src/shared/error.handler';
+import { Exclude } from 'class-transformer';
 
 @Entity({ name: 'users' })
 export class User extends BaseEntity {
   @Column({ primary: true, generated: true })
-  iduser: number;
+  userId: number;
 
   @Column({ length: 500 })
   name: string;
@@ -21,13 +22,14 @@ export class User extends BaseEntity {
   email: string;
 
   @Column({ nullable: false })
+  @Exclude({ toPlainOnly: true })
   password: string;
 
   @Column({ default: 'user' })
   rol: string;
 
   @BeforeInsert()
-  @BeforeUpdate()
+  //@BeforeUpdate()
   public async hashPasswordBeforeInsert(): Promise<void> {
     if (this.password) {
       this.password = await User.hashPassword(this.password);

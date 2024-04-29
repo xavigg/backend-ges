@@ -12,7 +12,7 @@ export class Category extends BaseEntity {
   
   // ID
   @PrimaryGeneratedColumn()
-  idcategory: number;
+  categoryId: number;
 
   @Column({ type: 'varchar' })
   name: string;

@@ -1,21 +1,26 @@
 import { HttpException, HttpStatus } from '@nestjs/common';
 
 interface ErrorOptions {
-  type: string;
   message: string;
   statusCode?: HttpStatus;
 }
 
-export class ErrorHandler extends Error {
-  statusCode: HttpStatus; 
+export class ErrorHandler extends HttpException {
+  statusCode: HttpStatus;
 
-  constructor({ type, message, statusCode }: ErrorOptions) {
-    super(`${type} / ${message}`);
-    this.statusCode = statusCode || HttpStatus.INTERNAL_SERVER_ERROR; 
+  constructor({
+    message,
+    statusCode = HttpStatus.INTERNAL_SERVER_ERROR,
+  }: ErrorOptions) {
+    super(message, statusCode);
+    this.statusCode = statusCode || HttpStatus.INTERNAL_SERVER_ERROR;
   }
 
-  public static createSignatureError({ type, message, statusCode }: ErrorOptions) {
-    throw new HttpException(message, statusCode || HttpStatus.INTERNAL_SERVER_ERROR);
+  public static createSignatureError({ message, statusCode }: ErrorOptions) {
+    throw new HttpException(
+      message,
+      statusCode || HttpStatus.INTERNAL_SERVER_ERROR,
+    );
   }
 
   public static handleNotFoundError(message: string) {
@@ -32,9 +37,9 @@ export class ErrorHandler extends Error {
 
   public static handleInternalServerError(message: string) {
     throw new HttpException(message, HttpStatus.INTERNAL_SERVER_ERROR);
-  } 
+  }
 
-  public static handleServiceUnavailableError(message: string) { 
+  public static handleServiceUnavailableError(message: string) {
     throw new HttpException(message, HttpStatus.SERVICE_UNAVAILABLE);
   }
 }

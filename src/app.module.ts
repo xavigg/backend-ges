@@ -7,9 +7,6 @@ import { CategoriesModule } from './categories/categories.module';
 import { FileUploadModule } from './file-upload/file-upload.module';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
-import * as cookieParser from 'cookie-parser';
-
-
 
 @Module({
   imports: [

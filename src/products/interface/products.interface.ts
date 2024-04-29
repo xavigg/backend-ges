@@ -1,8 +1,8 @@
 import { Brand } from "src/brands/entities/brand.entity";
 import { Category } from "src/categories/entities/category.entity";
-import { SearchOrderBy } from "src/shared/types/shared.types";
+import { SearchOrderBy } from "src/shared/types/SearchOrderBy.types";
 
-export interface ProductQuery {
+export interface ProductFilterOptions {
     brand?: string;
     category?: string;
     minPrice?: number;
@@ -22,7 +22,7 @@ export interface ProductQuery {
     createdAt: Date;
     updatedAt: Date;
     deletedAt: Date;
-    category?: Category; // Opcional si usas relaciones
-    brand?: Brand; // Opcional si usas relaciones
+    category?: Category; 
+    brand?: Brand; 
   }
   

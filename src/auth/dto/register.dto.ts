@@ -1,8 +1,7 @@
 import { Transform } from 'class-transformer';
 import { IsEmail, IsNotEmpty, IsString, MaxLength, MinLength } from 'class-validator';
-import { BaseEntity } from 'src/config/base.entity';
 
-export class RegisterDto extends BaseEntity {
+export class RegisterDto  {
   @IsString()
   @IsNotEmpty()
   @MinLength(3)

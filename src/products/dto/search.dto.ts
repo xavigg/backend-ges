@@ -1,6 +1,7 @@
 import { IsOptional, IsNumber, IsString, Min, Validate, IsEnum } from 'class-validator';
 import { MinMaxPriceValidator } from '../validators/minMaxPrice.validator';
-import { SearchOrderBy } from 'src/shared/types/shared.types';
+import { SearchOrderBy } from 'src/shared/types/SearchOrderBy.types';
+
 export class SearchDto {
     @IsOptional()
     @IsString()
@@ -24,6 +25,5 @@ export class SearchDto {
     @IsOptional()
     @IsEnum(SearchOrderBy)
     orderBy: SearchOrderBy;
-    
 
 }

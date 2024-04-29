@@ -1,14 +1,13 @@
-import {
-  BadRequestException,
-  Injectable,
-  ServiceUnavailableException,
-} from '@nestjs/common';
+import { HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { CreateBrandDto } from './dto/create-brand.dto';
 import { UpdateBrandDto } from './dto/update-brand.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Brand } from './entities/brand.entity';
 import { Repository } from 'typeorm';
-import { ErrorHandler } from 'src/utils/error.handler';
+import { ErrorHandler } from 'src/shared/error.handler';
+import { ExecutionResult } from 'src/shared/interfaces/ExecutionResult.interface';
+import { checkDuplicateData } from 'src/shared/checkDuplicateData.shared';
+import { findByIdOrName } from 'src/shared/findByIdOrName.shared';
 
 @Injectable()
 export class BrandsService {
@@ -17,19 +16,28 @@ export class BrandsService {
     private brandsRepository: Repository<Brand>,
   ) {}
 
-  async create(createBrandDto: CreateBrandDto): Promise<Brand> {
+  async create(createBrandDto: CreateBrandDto): Promise<ExecutionResult> {
     try {
-      return this.brandsRepository.save(createBrandDto);
+      const name = createBrandDto.name;
+      await checkDuplicateData(this.brandsRepository, { name: name });
+      const newBrand = this.brandsRepository.create(createBrandDto);
+      const result = await this.brandsRepository.save(newBrand);
+      return {
+        success: true,
+        message: 'Brand created successfully',
+        data: result,
+      };
     } catch (error) {
-      ErrorHandler.handleBadRequestError('Could not connect to the DB');
+      ErrorHandler.createSignatureError(error);
     }
   }
 
   async findAll(): Promise<Brand[]> {
     try {
       let brands = await this.brandsRepository.find();
-      if (!brands.length) {
-        ErrorHandler.handleNotFoundError('Error - No category found');
+      if (brands.length === 0) {
+        Logger.log('No brands found');
+        return [];
       }
       return brands;
     } catch (error) {
@@ -37,40 +45,98 @@ export class BrandsService {
     }
   }
 
-  async findByID(idbrand: number): Promise<Brand> {
+  async findBrandByIdOrName(idOrName: string): Promise<Brand[]> {
+    try {
+      const brands = await findByIdOrName(this.brandsRepository, idOrName);
+      return brands;
+    } catch (error) {
+      throw ErrorHandler.createSignatureError(error);
+    }
+  }
+
+  async findByID(brandId: number): Promise<Brand> {
     try {
       let brand = await this.brandsRepository.findOneBy({
-        idbrand,
+        brandId,
       });
       if (!brand) {
-        ErrorHandler.handleNotFoundError('Error - No category found');
+        throw new ErrorHandler({
+          message: 'No brands found with the given ID',
+          statusCode: HttpStatus.NOT_FOUND,
+        });
       }
       return brand;
     } catch (error) {
-      ErrorHandler.handleServiceUnavailableError(error);
+      throw ErrorHandler.createSignatureError(error);
     }
   }
 
   async update(
-    idbrand: number,
+    brandId: number,
     updateBrandDto: UpdateBrandDto,
-  ): Promise<Brand> {
+  ): Promise<ExecutionResult> {
     try {
       let toUpdate = await this.brandsRepository.findOne({
-        where: { idbrand: idbrand },
+        where: { brandId: brandId },
       });
       let updated = Object.assign(toUpdate, updateBrandDto);
-      return this.brandsRepository.save(updated);
+      this.brandsRepository.save(updated);
+      return {
+        success: true,
+        message: 'Brand updated successfully',
+        data: updated,
+      };
     } catch (error) {
       ErrorHandler.handleBadRequestError('Brand ID was incorrectly formatted');
     }
   }
 
-  async remove(idbrand: number): Promise<any> {
+  async remove(brandId: number): Promise<ExecutionResult> {
     try {
-      return await this.brandsRepository.delete({ idbrand: idbrand });
+      const result = await this.brandsRepository.delete({
+        brandId: brandId,
+      });
+      if (result.affected === 0) {
+        throw new ErrorHandler({
+          message: `Brand with ID ${brandId} not found`,
+          statusCode: HttpStatus.NOT_FOUND,
+        });
+      }
+      return { success: true, message: 'Brand deleted successfully' };
     } catch (error) {
-      ErrorHandler.handleBadRequestError('Brand ID was incorrectly formatted');
+      throw ErrorHandler.handleBadRequestError(
+        'Brand ID was incorrectly formatted',
+      );
+    }
+  }
+
+  async softDelete(brandId: number): Promise<ExecutionResult> {
+    try {
+      const result = await this.brandsRepository.softDelete(brandId);
+      if (result.affected === 0) {
+        throw new ErrorHandler({
+          message: `Product with ID ${brandId} not found`,
+          statusCode: HttpStatus.NOT_FOUND,
+        });
+      }
+      return { success: true, message: 'Brand deleted successfully' };
+    } catch (error) {
+      throw ErrorHandler.createSignatureError(error);
+    }
+  }
+
+  async restoreDeletedProduct(brandId: number): Promise<ExecutionResult> {
+    try {
+      const result = await this.brandsRepository.restore(brandId);
+      if (result.affected === 0) {
+        throw new ErrorHandler({
+          message: `Brand with ID ${brandId} not found`,
+          statusCode: HttpStatus.NOT_FOUND,
+        });
+      }
+      return { success: true, message: 'Brand restored successfully' };
+    } catch (error) {
+      throw ErrorHandler.createSignatureError(error);
     }
   }
 }

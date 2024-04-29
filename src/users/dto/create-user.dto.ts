@@ -3,7 +3,7 @@ import { IsEmail,  IsNotEmpty, IsString, MaxLength, MinLength } from "class-vali
 import { BaseEntity } from "src/config/base.entity";
 import { ROLES } from "src/constants/roles";
 
-export class CreateUserDto extends BaseEntity {
+export class CreateUserDto /*extends BaseEntity */ {
   
   @IsString()
   @IsNotEmpty()
