@@ -17,7 +17,6 @@ import RequestWithUser from './interfaces/requestWithUser.interface';
 import {
   ApiBadRequestResponse,
   ApiBody,
-  ApiCookieAuth,
   ApiCreatedResponse,
   ApiOkResponse,
   ApiOperation,
@@ -29,7 +28,7 @@ import { Response } from 'express';
 
 // Swagger
 @ApiTags('Auth')
-@ApiCookieAuth()
+@ApiUnauthorizedResponse({ description: 'Unauthorized' })
 // Controller
 @Controller('auth')
 export class AuthController {
@@ -38,7 +37,6 @@ export class AuthController {
   @ApiOperation({ summary: 'User login' })
   @ApiBody({ type: LoginDto })
   @ApiOkResponse({ description: 'User logged in' })
-  @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @Public()
   @HttpCode(HttpStatus.OK)
   @UseGuards(LocalAuthGuard)
@@ -58,7 +56,6 @@ export class AuthController {
 
   @ApiOperation({ summary: 'Refresh Token' })
   @ApiOkResponse({ description: 'Refreshed Token' })
-  @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @Public()
   @HttpCode(HttpStatus.OK)
   @UseGuards(LocalAuthGuard)
@@ -82,7 +79,6 @@ export class AuthController {
 
   @ApiOperation({ summary: 'Register a new user' })
   @ApiCreatedResponse({ description: 'User Created' })
-  @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiBadRequestResponse({ description: 'Email already exists' })
   @ApiBody({ type: RegisterDto })
   @Public()
