@@ -4,10 +4,12 @@ import { UpdateBrandDto } from './dto/update-brand.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Brand } from './entities/brand.entity';
 import { Repository } from 'typeorm';
-import { ErrorHandler } from 'src/shared/error.handler';
-import { ExecutionResult } from 'src/shared/interfaces/ExecutionResult.interface';
-import { checkDuplicateData } from 'src/shared/checkDuplicateData.shared';
-import { findByIdOrName } from 'src/shared/findByIdOrName.shared';
+import {
+  ErrorHandler,
+  ExecutionResult,
+  checkDuplicateData,
+  findByIdOrName,
+} from 'src/shared';
 
 @Injectable()
 export class BrandsService {

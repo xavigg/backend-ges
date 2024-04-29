@@ -5,8 +5,7 @@ import { LoginDto } from './dto/login.dto';
 import { User } from 'src/users/entities/user.entity';
 import { RegisterDto } from './dto/register.dto';
 import { JWTPayload } from './interfaces/jwt.interface';
-import { ErrorHandler } from 'src/shared/error.handler';
-import { ExecutionResult } from 'src/shared/interfaces/ExecutionResult.interface';
+import { ErrorHandler, ExecutionResult } from 'src/shared';
 
 @Injectable()
 export class AuthService {
