@@ -4,10 +4,12 @@ import { UpdateCategoryDto } from './dto/update-category.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Category } from './entities/category.entity';
 import { Repository } from 'typeorm';
-import { ErrorHandler } from 'src/shared/error.handler';
-import { ExecutionResult } from 'src/shared/interfaces/ExecutionResult.interface';
-import { checkDuplicateData, findByIdOrName } from 'src/shared';
-
+import {
+  ErrorHandler,
+  ExecutionResult,
+  checkDuplicateData,
+  findByIdOrName,
+} from 'src/shared';
 
 @Injectable()
 export class CategoriesService {
@@ -47,7 +49,10 @@ export class CategoriesService {
 
   async findCategoryByIdOrName(idOrName: string): Promise<Category[]> {
     try {
-      const categories = await findByIdOrName(this.categoriesRepository, idOrName);
+      const categories = await findByIdOrName(
+        this.categoriesRepository,
+        idOrName,
+      );
       return categories;
     } catch (error) {
       throw ErrorHandler.createSignatureError(error);
@@ -87,7 +92,9 @@ export class CategoriesService {
         data: updated,
       };
     } catch (error) {
-      ErrorHandler.handleBadRequestError('Category ID was incorrectly formatted');
+      ErrorHandler.handleBadRequestError(
+        'Category ID was incorrectly formatted',
+      );
     }
   }
 

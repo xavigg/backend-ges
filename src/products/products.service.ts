@@ -10,9 +10,9 @@ import {
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { Product } from './entities/product.entity';
-import { ErrorHandler } from 'src/shared/error.handler';
 import { ProductFilterOptions } from './interface/products.interface';
 import {
+  ErrorHandler,
   ExecutionResult,
   checkDuplicateData,
   findByIdOrName,

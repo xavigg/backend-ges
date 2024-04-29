@@ -4,9 +4,7 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from './entities/user.entity';
-import { ErrorHandler } from 'src/shared/error.handler';
-import { checkDuplicateData } from 'src/shared/checkDuplicateData.shared';
-import { ExecutionResult } from 'src/shared/interfaces/ExecutionResult.interface';
+import { ErrorHandler, ExecutionResult, checkDuplicateData } from 'src/shared';
 
 @Injectable()
 export class UsersService {
@@ -16,9 +14,7 @@ export class UsersService {
     private readonly usersRepository: Repository<User>,
   ) {}
 
-  async createUser(
-    createUserDto: CreateUserDto,
-  ): Promise<ExecutionResult> {
+  async createUser(createUserDto: CreateUserDto): Promise<ExecutionResult> {
     try {
       const email = createUserDto.email;
       await checkDuplicateData(this.usersRepository, { email: email });
