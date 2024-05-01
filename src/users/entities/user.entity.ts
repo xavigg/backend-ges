@@ -26,7 +26,7 @@ export class User extends BaseEntity {
   password: string;
 
   @Column({ default: 'user' })
-  rol: string;
+  roles: string;
 
   @BeforeInsert()
   //@BeforeUpdate()

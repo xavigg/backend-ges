@@ -9,6 +9,7 @@ import { JwtAuthGuard } from "./guards/jwt-auth.guard";
 import { JwtStrategy } from "./strategies/jwt.strategy";
 import { LocalStrategy } from "./strategies/local.strategy";
 import { AuthController } from "./auth.controller";
+import { RolesGuard } from "./guards/roles.guard";
 
 const jwtFactory = {
   imports: [ConfigModule],
@@ -32,7 +33,11 @@ const jwtFactory = {
   providers: [AuthService, LocalStrategy, JwtStrategy, 
     {
     provide: APP_GUARD,
-    useClass: JwtAuthGuard,
+    useClass: JwtAuthGuard
+  },
+  {
+    provide: APP_GUARD,
+    useClass: RolesGuard
   },
   
 ],

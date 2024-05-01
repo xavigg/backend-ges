@@ -1,6 +1,7 @@
 export interface JWTPayload {
     sub: number;
     email: string;
+    roles: string;
   }
 
   export interface signJwtAccessTokenResponse {

@@ -16,7 +16,7 @@ export class AuthService {
   ) {}
 
   async signJwtAccessToken(user: User): Promise<string> {
-    const payload: JWTPayload = { sub: user.userId, email: user.email };
+    const payload: JWTPayload = { sub: user.userId, email: user.email, roles: user.roles };
     try {
       const authToken = await this.jwtService.signAsync(payload, {
         expiresIn: process.env.JWT_EXP_H,
@@ -28,7 +28,7 @@ export class AuthService {
   }
 
   public async signJwtRefreshToken(user: User): Promise<string> {
-    const payload: JWTPayload = { sub: user.userId, email: user.email };
+    const payload: JWTPayload = { sub: user.userId, email: user.email, roles: user.roles };
     try {
       const refreshToken = await this.jwtService.signAsync(payload, {
         secret: process.env.JWT_REFRESH_SECRET,

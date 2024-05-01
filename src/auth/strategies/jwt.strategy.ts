@@ -9,22 +9,24 @@ import { ErrorHandler } from 'src/shared/error.handler';
 export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor() {
     super({
-      jwtFromRequest:ExtractJwt.fromExtractors([(request:Request) => {
-        let data = request?.cookies["auth-cookie"];
-        if(!data){
+      jwtFromRequest: ExtractJwt.fromExtractors([
+        (request: Request) => {
+          let data = request?.cookies['auth-cookie'];
+          if (!data) {
             return null;
-        }
-        return data;
-      }]),
+          }
+          return data;
+        },
+      ]),
       ignoreExpiration: false,
       secretOrKey: process.env.JWT_SECRET,
     });
   }
 
   async validate(payload: JWTPayload) {
-    if(payload === null){
-      ErrorHandler.handleUnauthorizedError("Unauthorized");
-  }
-  return { iduser: payload.sub, email: payload.email };
+    if (payload === null) {
+      ErrorHandler.handleUnauthorizedError('Unauthorized');
+    }
+    return { sub: payload.sub, email: payload.email, roles: payload.roles };
   }
 }
