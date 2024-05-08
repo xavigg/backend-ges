@@ -1,4 +1,4 @@
-# E-commerce Project
+# Gestion Project
 
 Este es un proyecto de comercio electrónico desarrollado con NestJS y TypeScript.
 <p align="center">
