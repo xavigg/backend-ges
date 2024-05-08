@@ -53,7 +53,7 @@ export class UsersController {
   @ApiOperation({ summary: 'Find user by Id' })
   @ApiNotFoundResponse({ description: 'User not found' })
   @ApiOkResponse({ description: 'Show user by id' })
-  @Get(':categoryId')
+  @Get(':userId')
   async findByID(@Param('userId', ParseIntPipe) userId: number) {
     return await this.usersService.findById(userId);
   }

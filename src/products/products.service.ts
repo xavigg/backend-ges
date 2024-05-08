@@ -131,7 +131,7 @@ export class ProductsService {
     try {
       let product = await this.productsRepository.findOne({
         where: { productId: productId },
-        ...this.ProductRelationsAndFields(),
+        ...this.RelationsAndFields(),
       });
       if (!product) {
         throw new ErrorHandler({
@@ -191,14 +191,14 @@ export class ProductsService {
       orderConditions[field] = order.toUpperCase();
     }
     const finalQuery = {
-      ...this.ProductRelationsAndFields(),
+      ...this.RelationsAndFields(),
       where: whereConditions,
       order: orderConditions,
     };
     return finalQuery;
   }
 
-  private ProductRelationsAndFields() {
+  private RelationsAndFields() {
     const query = {
       relations: ['category', 'brand'],
       select: {

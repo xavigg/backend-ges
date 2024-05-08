@@ -28,7 +28,7 @@ import {
 } from '@nestjs/swagger';
 import { SanitizeTextPipe } from 'src/shared/pipes/sanitize.pipe';
 import { Roles } from 'src/auth/decorators/roles.decorator';
-import { Role } from 'src/auth/enums/role.enum';
+import { Role } from 'src/users/enums/role.enum';
 
 // Swagger
 @ApiTags('Products')

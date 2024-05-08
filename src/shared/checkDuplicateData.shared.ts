@@ -6,13 +6,15 @@ interface SearchParams {
   name?: string;
   id?: number;
   email?: string;
+  docNumber?: string;
+  condition?: string;
 }
 
 export async function checkDuplicateData(
   repo: Repository<any>,
   param: SearchParams,
 ): Promise<void> {
-  const { name, id, email } = param;
+  const { name, id, email, docNumber, condition } = param;
   const checks = [];
 
   if (name) {
@@ -27,6 +29,14 @@ export async function checkDuplicateData(
 
   if (email) {
     checks.push(checkIfExists(repo, 'email', email));
+  }
+
+  if (docNumber) {
+    checks.push(checkIfExists(repo, 'docNumber', docNumber));
+  }
+
+  if (condition) {
+    checks.push(checkIfExists(repo, 'condition', condition));
   }
 
   const results = await Promise.all(checks);

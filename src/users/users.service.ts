@@ -11,15 +11,15 @@ export class UsersService {
   configService: any;
   constructor(
     @InjectRepository(User)
-    private readonly usersRepository: Repository<User>,
+    private readonly userRepository: Repository<User>,
   ) {}
 
   async createUser(createUserDto: CreateUserDto): Promise<ExecutionResult> {
     try {
       const email = createUserDto.email;
-      await checkDuplicateData(this.usersRepository, { email: email });
-      const newUser = this.usersRepository.create(createUserDto);
-      const result = await this.usersRepository.save(newUser);
+      await checkDuplicateData(this.userRepository, { email: email });
+      const newUser = this.userRepository.create(createUserDto);
+      const result = await this.userRepository.save(newUser);
       return { success: true, message: 'User created', data: result };
     } catch (error) {
       ErrorHandler.handleServiceUnavailableError(error.message);
@@ -28,7 +28,7 @@ export class UsersService {
 
   async findAll(): Promise<User[]> {
     try {
-      const users = await this.usersRepository.find();
+      const users = await this.userRepository.find();
       if (users.length === 0) {
         Logger.log('No users found');
         return [];
@@ -41,7 +41,7 @@ export class UsersService {
 
   async findById(userId: number): Promise<User> {
     try {
-      let user = await this.usersRepository.findOneBy({
+      let user = await this.userRepository.findOneBy({
         userId,
       });
       if (!user) {
@@ -58,7 +58,7 @@ export class UsersService {
 
   async findOneByEmail(email: string): Promise<User> {
     try {
-      const user = await this.usersRepository.findOne({
+      const user = await this.userRepository.findOne({
         where: { email: email },
       });
       if (!user) {
@@ -75,11 +75,11 @@ export class UsersService {
     updateUserDto: UpdateUserDto,
   ): Promise<ExecutionResult> {
     try {
-      const user = await this.usersRepository.findOneOrFail({
+      const user = await this.userRepository.findOneOrFail({
         where: { userId },
       });
       Object.assign(user, updateUserDto);
-      const result = await this.usersRepository.save(user);
+      const result = await this.userRepository.save(user);
       return { success: true, message: 'User updated', data: result };
     } catch (error) {
       ErrorHandler.handleBadRequestError(
@@ -90,13 +90,13 @@ export class UsersService {
 
   async remove(userId: number): Promise<void> {
     try {
-      const result = await this.usersRepository.delete(userId);
+      const result = await this.userRepository.delete(userId);
       if (result.affected === 0) {
         ErrorHandler.handleNotFoundError(`User with ID ${userId} not found`);
       }
     } catch (error) {
       ErrorHandler.handleBadRequestError(
-        'Product ID was incorrectly formatted or does not exist',
+        'User ID was incorrectly formatted or does not exist',
       );
     }
   }
