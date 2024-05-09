@@ -29,6 +29,7 @@ import {
 import { SanitizeTextPipe } from 'src/shared/pipes/sanitize.pipe';
 import { Roles } from 'src/auth/decorators/roles.decorator';
 import { Role } from 'src/users/enums/role.enum';
+import { Public } from 'src/auth/decorators/public.decorator';
 
 // Swagger
 @ApiTags('Products')
@@ -84,7 +85,8 @@ export class ProductsController {
   @ApiOperation({ summary: 'Show all products' })
   @ApiServiceUnavailableResponse({ description: 'Service Unavailable' })
   @ApiOkResponse({ description: 'Show all products' })
-  @Roles(Role.Admin, Role.User)
+  @Public()
+  //@Roles(Role.Admin, Role.User)
   @Get()
   async findAll() {
     return await this.productsService.findAll();

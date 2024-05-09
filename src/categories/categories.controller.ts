@@ -23,6 +23,7 @@ import {
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { SanitizeTextPipe } from 'src/shared/pipes/sanitize.pipe';
+import { Public } from 'src/auth/decorators/public.decorator';
 
 // Swagger
 @ApiTags('Categories')
@@ -35,6 +36,7 @@ export class CategoriesController {
   @ApiOperation({ summary: 'Create a new category' })
   @ApiBadRequestResponse({ description: 'Category already exists' })
   @ApiCreatedResponse({ description: 'Category created' })
+  @Public()
   @Post()
   async create(@Body() createCategoryDto: CreateCategoryDto) {
     return await this.categoriesService.create(createCategoryDto);
@@ -43,6 +45,7 @@ export class CategoriesController {
   @ApiOperation({ summary: 'Show all categories' })
   @ApiServiceUnavailableResponse({ description: 'Service Unavailable' })
   @ApiOkResponse({ description: 'Show all categories' })
+  @Public()
   @Get()
   async findAll() {
     return await this.categoriesService.findAll();
