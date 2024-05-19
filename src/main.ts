@@ -3,8 +3,6 @@ import { AppModule } from './app.module';
 import { Logger, ValidationPipe } from '@nestjs/common';
 import * as cookieParser from 'cookie-parser';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import fastifyCookie from '@fastify/cookie';
-import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify';
 
 const APP_PORT = process.env.APP_PORT || 4444;
 
@@ -30,7 +28,10 @@ async function bootstrap() {
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('docs', app, document);
-  app.enableCors({ credentials: true });
+  app.enableCors({
+    origin: 'http://localhost:3000', // Asegúrate de reemplazar esto con la URL de tu frontend
+    credentials: true, // Para permitir el envío de cookies y autenticación basada en sesiones
+  });
 
   await app.listen(APP_PORT);
 

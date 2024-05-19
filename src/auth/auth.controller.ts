@@ -25,6 +25,7 @@ import {
 } from '@nestjs/swagger';
 import { LoginDto } from './dto/login.dto';
 import { Response } from 'express';
+import { JwtAuthGuard } from './guards/jwt-auth.guard';
 
 // Swagger
 @ApiTags('Auth')
@@ -52,6 +53,12 @@ export class AuthController {
       httpOnly: true,
     });
     return { id: user.userId, email: user.email, message: 'User logged in' };
+  }
+
+  @Post('tokenVerify')
+  @UseGuards(JwtAuthGuard)
+  async verificarToken(@Req() req) {
+    return { isValid: true };
   }
 
   @ApiOperation({ summary: 'Refresh Token' })
